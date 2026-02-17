@@ -1,0 +1,140 @@
+# GitHub Labels Configuration
+# Usage: npx github-label-sync --labels .github/labels.yml <owner>/<repo>
+
+# Type Labels
+- name: bug
+  color: "d73a4a"
+  description: Something isn't working correctly
+
+- name: enhancement
+  color: "a2eeef"
+  description: New feature or request
+
+- name: documentation
+  color: "0075ca"
+  description: Improvements or additions to documentation
+
+- name: refactor
+  color: "fbca04"
+  description: Code refactoring without changing functionality
+
+- name: test
+  color: "1d76db"
+  description: Testing-related changes or improvements
+
+- name: chore
+  color: "fef2c0"
+  description: Maintenance tasks, dependency updates, etc.
+
+# Priority Labels
+- name: priority-critical
+  color: "b60205"
+  description: Critical priority - must be addressed immediately
+
+- name: priority-high
+  color: "d93f0b"
+  description: High priority - should be addressed soon
+
+- name: priority-medium
+  color: "fbca04"
+  description: Medium priority - normal timeline
+
+- name: priority-low
+  color: "0e8a16"
+  description: Low priority - nice to have
+
+# Status Labels
+- name: needs-triage
+  color: "ededed"
+  description: Needs initial review and prioritization
+
+- name: blocked
+  color: "b60205"
+  description: Blocked by another issue or external dependency
+
+- name: in-progress
+  color: "0052cc"
+  description: Currently being worked on
+
+- name: ready-for-review
+  color: "0e8a16"
+  description: Ready for code review
+
+- name: wontfix
+  color: "ffffff"
+  description: This issue or pull request will not be worked on
+
+- name: duplicate
+  color: "cfd3d7"
+  description: This issue or pull request already exists
+
+# Area Labels
+- name: frontend
+  color: "5319e7"
+  description: Next.js pages, components, and client behavior
+
+- name: api
+  color: "0366d6"
+  description: API integration and data contracts
+
+- name: auth
+  color: "d4c5f9"
+  description: Authentication and authorization concerns
+
+- name: ui
+  color: "7057ff"
+  description: Design system and UI component work
+
+- name: ci-cd
+  color: "5319e7"
+  description: Continuous integration and deployment
+
+- name: testing
+  color: "1d76db"
+  description: Test infrastructure and coverage
+
+- name: engineering-standards
+  color: "d4c5f9"
+  description: Engineering standards and code quality
+
+- name: dependencies
+  color: "0366d6"
+  description: Dependency updates and management
+
+- name: code-quality
+  color: "d4c5f9"
+  description: Code quality improvements
+
+- name: tech-debt
+  color: "fbca04"
+  description: Technical debt that needs addressing
+
+- name: performance
+  color: "ff6b6b"
+  description: Performance improvements
+
+# Effort Labels
+- name: effort-small
+  color: "c2e0c6"
+  description: Small effort - a few hours
+
+- name: effort-medium
+  color: "ffd700"
+  description: Medium effort - a few days
+
+- name: effort-large
+  color: "ff9999"
+  description: Large effort - a week or more
+
+# Special Labels
+- name: good-first-issue
+  color: "7057ff"
+  description: Good for newcomers
+
+- name: help-wanted
+  color: "008672"
+  description: Extra attention is needed
+
+- name: question
+  color: "d876e3"
+  description: Further information is requested

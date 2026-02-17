@@ -1,0 +1,108 @@
+name: "📋 Engineering Standards Violation"
+description: Report a violation of engineering standards or code quality issues
+title: "[Standards]: "
+labels: ["engineering-standards", "code-quality"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Report violations of the project's engineering standards and code quality expectations.
+
+  - type: dropdown
+    id: standard-category
+    attributes:
+      label: Standard Category
+      description: Which category of standard is violated?
+      options:
+        - Architecture and Separation of Concerns
+        - Code Quality (complexity, readability, maintainability)
+        - Testing Standards
+        - Commit Message Format
+        - Documentation Standards
+        - Accessibility and UX Standards
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: standard-violated
+    attributes:
+      label: Standard Violated
+      description: Which specific standard or rule is violated?
+      placeholder: |
+        Example: "Component handles too many concerns and should be split"
+        Example: "Missing test coverage for critical user flow"
+    validations:
+      required: true
+
+  - type: textarea
+    id: location
+    attributes:
+      label: Location
+      description: Where is the violation located?
+      placeholder: |
+        File: src/components/example.tsx
+        Component/Module: ExampleComponent
+        Function/Section: handleSubmit
+    validations:
+      required: true
+
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current State
+      description: Describe the current code or practice that violates the standard
+      placeholder: Describe what currently exists...
+      render: typescript
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-state
+    attributes:
+      label: Expected State
+      description: How should the code be refactored to comply with the standard?
+      placeholder: Describe the compliant approach...
+      render: typescript
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      description: How severe is this violation?
+      options:
+        - Low - Minor deviation, cosmetic
+        - Medium - Affects maintainability
+        - High - Violates core principles, affects quality
+        - Critical - Blocks production readiness
+    validations:
+      required: true
+
+  - type: textarea
+    id: refactoring-plan
+    attributes:
+      label: Proposed Refactoring Plan
+      description: Steps to fix the violation (optional)
+      placeholder: |
+        1. Split component responsibilities
+        2. Add missing tests
+        3. Update docs
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any other relevant information
+      placeholder: Add context here...
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Pre-submission Checklist
+      options:
+        - label: I have verified this violates the documented engineering standards
+          required: true
+        - label: I have checked if this is already tracked in another issue
+          required: true

@@ -1,0 +1,3 @@
+[submodule "engineering-standards"]
+	path = engineering-standards
+	url = git@github.com:pmurasky/engineering-standards.git

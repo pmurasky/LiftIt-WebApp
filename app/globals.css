@@ -2,18 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Color palette: Detroit Lions — Option B (Dark Mode First)
+ * Primary:    Honolulu Blue brightened  #009DD9  hsl(199 100% 43%)
+ * Background: Deep charcoal            #0F1117  hsl(222 14%  8%)
+ * Silver:     Used for borders         #2D3748  hsl(220 24% 23%)
+ *
+ * Alternate palettes (not active):
+ *   Option A — Classic Lions:    light bg, true #0076B6 blue, silver borders
+ *   Option C — Balanced Modern:  soft blue-tinted white, warm silver accents
+ */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --primary: 221.2 83.2% 53.3%;
-  --primary-foreground: 210 40% 98%;
-  --muted: 210 40% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 221.2 83.2% 53.3%;
+  /* Surfaces */
+  --background: 222 14% 8%;        /* #0F1117 deep charcoal */
+  --foreground: 210 25% 96%;       /* #F0F4F8 light text */
+  --card: 220 23% 15%;             /* #1E2430 dark card */
+  --card-foreground: 210 25% 96%;  /* #F0F4F8 */
+
+  /* Brand / Interactive — Honolulu Blue (brightened for dark bg) */
+  --primary: 199 100% 43%;         /* #009DD9 */
+  --primary-foreground: 0 0% 100%; /* #FFFFFF */
+
+  /* Muted */
+  --muted: 220 23% 15%;            /* #1E2430 dark surface */
+  --muted-foreground: 213 15% 65%; /* #9AA5B4 subdued text */
+
+  /* Structural — Lions Silver */
+  --border: 220 24% 23%;           /* #2D3748 */
+  --input: 220 24% 23%;            /* #2D3748 */
+  --ring: 199 100% 43%;            /* #009DD9 focus ring */
 }
 
 * {

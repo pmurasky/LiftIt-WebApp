@@ -1,4 +1,6 @@
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 const API_BASE_PATH = process.env.NEXT_PUBLIC_API_BASE_PATH ?? "/api/v1";
+const API_URL = `${API_BASE_URL}${API_BASE_PATH}`;
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
@@ -12,7 +14,7 @@ export async function apiRequest<T>(
   path: string,
   { method = "GET", body, token, headers, ...init }: ApiRequestOptions = {}
 ): Promise<T> {
-  const response = await fetch(`${API_BASE_PATH}${path}`, {
+  const response = await fetch(`${API_URL}${path}`, {
     method,
     headers: {
       "Content-Type": "application/json",

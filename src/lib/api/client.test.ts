@@ -185,5 +185,49 @@ describe("apiRequest", () => {
         "API 500: Internal Server Error"
       );
     });
+
+    it("should handle 401 Unauthorized responses", async () => {
+      // Given
+      const errorResponse = {
+        ok: false,
+        status: 401,
+        statusText: "Unauthorized",
+        text: vi.fn().mockResolvedValue("Invalid or expired token"),
+        json: vi.fn(),
+      };
+      mockFetch.mockResolvedValue(errorResponse);
+
+      // When / Then
+      await expect(
+        apiRequest("/workouts", { token: "expired-token" })
+      ).rejects.toThrow("API 401: Invalid or expired token");
+    });
+
+    it("should handle 403 Forbidden responses", async () => {
+      // Given
+      const errorResponse = {
+        ok: false,
+        status: 403,
+        statusText: "Forbidden",
+        text: vi
+          .fn()
+          .mockResolvedValue("You do not have access to this resource"),
+        json: vi.fn(),
+      };
+      mockFetch.mockResolvedValue(errorResponse);
+
+      // When / Then
+      await expect(
+        apiRequest("/admin/users", { token: "valid-token" })
+      ).rejects.toThrow("API 403: You do not have access to this resource");
+    });
+
+    it("should handle network errors", async () => {
+      // Given
+      mockFetch.mockRejectedValue(new Error("Network error"));
+
+      // When / Then
+      await expect(apiRequest("/exercises")).rejects.toThrow("Network error");
+    });
   });
 });

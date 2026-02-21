@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { apiRequest } from "./client";
+import { apiRequest, ApiError } from "./client";
 
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
@@ -7,12 +7,18 @@ vi.stubGlobal("fetch", mockFetch);
 function makeResponse(
   status: number,
   body: unknown,
-  ok: boolean = status >= 200 && status < 300
+  ok: boolean = status >= 200 && status < 300,
+  contentType: string = "application/json"
 ) {
   return {
     ok,
     status,
     statusText: "OK",
+    headers: {
+      get: vi.fn((header: string) =>
+        header.toLowerCase() === "content-type" ? contentType : null
+      ),
+    },
     json: vi.fn().mockResolvedValue(body),
     text: vi.fn().mockResolvedValue(typeof body === "string" ? body : ""),
   };
@@ -152,74 +158,94 @@ describe("apiRequest", () => {
   });
 
   describe("error responses", () => {
-    it("should throw an error with status and body text when response is not ok", async () => {
+    it("should throw ApiError with status and message for text responses", async () => {
       // Given
-      const errorResponse = {
-        ok: false,
-        status: 404,
-        statusText: "Not Found",
-        text: vi.fn().mockResolvedValue("Exercise not found"),
-        json: vi.fn(),
-      };
-      mockFetch.mockResolvedValue(errorResponse);
+      mockFetch.mockResolvedValue(
+        makeResponse(404, "Exercise not found", false, "text/plain")
+      );
 
       // When / Then
-      await expect(apiRequest("/exercises/999")).rejects.toThrow(
-        "API 404: Exercise not found"
+      try {
+        await apiRequest("/exercises/999");
+        expect.fail("Should have thrown ApiError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(404);
+        expect((error as ApiError).message).toBe("Exercise not found");
+        expect((error as ApiError).isNotFound).toBe(true);
+      }
+    });
+
+    it("should throw ApiError with JSON error body", async () => {
+      // Given
+      const errorBody = { message: "Validation failed", field: "name" };
+      mockFetch.mockResolvedValue(
+        makeResponse(400, errorBody, false, "application/json")
       );
+
+      // When / Then
+      try {
+        await apiRequest("/exercises");
+        expect.fail("Should have thrown ApiError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(400);
+        expect((error as ApiError).message).toBe("Validation failed");
+        expect((error as ApiError).body).toEqual(errorBody);
+        expect((error as ApiError).isClientError).toBe(true);
+      }
     });
 
     it("should fall back to statusText when error body is empty", async () => {
       // Given
-      const errorResponse = {
-        ok: false,
-        status: 500,
-        statusText: "Internal Server Error",
-        text: vi.fn().mockResolvedValue(""),
-        json: vi.fn(),
-      };
-      mockFetch.mockResolvedValue(errorResponse);
+      mockFetch.mockResolvedValue(
+        makeResponse(500, "", false, "text/plain")
+      );
 
       // When / Then
-      await expect(apiRequest("/exercises")).rejects.toThrow(
-        "API 500: Internal Server Error"
-      );
+      try {
+        await apiRequest("/exercises");
+        expect.fail("Should have thrown ApiError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(500);
+        expect((error as ApiError).message).toBe("OK");
+        expect((error as ApiError).isServerError).toBe(true);
+      }
     });
 
     it("should handle 401 Unauthorized responses", async () => {
       // Given
-      const errorResponse = {
-        ok: false,
-        status: 401,
-        statusText: "Unauthorized",
-        text: vi.fn().mockResolvedValue("Invalid or expired token"),
-        json: vi.fn(),
-      };
-      mockFetch.mockResolvedValue(errorResponse);
+      mockFetch.mockResolvedValue(
+        makeResponse(401, "Invalid or expired token", false, "text/plain")
+      );
 
       // When / Then
-      await expect(
-        apiRequest("/workouts", { token: "expired-token" })
-      ).rejects.toThrow("API 401: Invalid or expired token");
+      try {
+        await apiRequest("/workouts", { token: "expired-token" });
+        expect.fail("Should have thrown ApiError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(401);
+        expect((error as ApiError).isUnauthorized).toBe(true);
+      }
     });
 
     it("should handle 403 Forbidden responses", async () => {
       // Given
-      const errorResponse = {
-        ok: false,
-        status: 403,
-        statusText: "Forbidden",
-        text: vi
-          .fn()
-          .mockResolvedValue("You do not have access to this resource"),
-        json: vi.fn(),
-      };
-      mockFetch.mockResolvedValue(errorResponse);
+      mockFetch.mockResolvedValue(
+        makeResponse(403, "You do not have access to this resource", false, "text/plain")
+      );
 
       // When / Then
-      await expect(
-        apiRequest("/admin/users", { token: "valid-token" })
-      ).rejects.toThrow("API 403: You do not have access to this resource");
+      try {
+        await apiRequest("/admin/users", { token: "valid-token" });
+        expect.fail("Should have thrown ApiError");
+      } catch (error) {
+        expect(error).toBeInstanceOf(ApiError);
+        expect((error as ApiError).status).toBe(403);
+        expect((error as ApiError).isForbidden).toBe(true);
+      }
     });
 
     it("should handle network errors", async () => {

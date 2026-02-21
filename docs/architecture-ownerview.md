@@ -8,6 +8,12 @@
 - shadcn/ui component system
 - Separate repository from backend
 
+## Design Requirements
+
+- **Responsive Design**: All features must work on mobile phone browsers and desktop browsers (see [ADR-0001](adr/0001-responsive-design-mobile-and-desktop.md))
+- Mobile-first approach using Tailwind breakpoints
+- Minimum 44x44px touch targets for mobile interactions
+
 ---
 
 ## Authentication Flow

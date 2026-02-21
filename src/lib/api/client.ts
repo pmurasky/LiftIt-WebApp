@@ -1,4 +1,5 @@
 import { ApiError } from "./errors";
+import { getAccessToken } from "@/lib/auth/session";
 
 export { ApiError };
 
@@ -12,6 +13,24 @@ export interface ApiRequestOptions extends Omit<RequestInit, "method" | "body"> 
   method?: HttpMethod;
   body?: unknown;
   token?: string;
+}
+
+/**
+ * Makes an authenticated API request using the current server-side session
+ * token. Throws ApiError(401) when no active session exists.
+ *
+ * Use this for all protected API endpoints. Use apiRequest directly only
+ * for public endpoints that do not require authentication.
+ */
+export async function authenticatedRequest<T>(
+  path: string,
+  options: Omit<ApiRequestOptions, "token"> = {}
+): Promise<T> {
+  const token = await getAccessToken();
+  if (!token) {
+    throw new ApiError(401, "No active session");
+  }
+  return apiRequest<T>(path, { ...options, token });
 }
 
 export async function apiRequest<T>(

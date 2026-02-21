@@ -1,5 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { apiRequest, ApiError } from "./client";
+import { apiRequest, authenticatedRequest, ApiError } from "./client";
+
+vi.mock("../auth/session", () => ({
+  getAccessToken: vi.fn(),
+}));
+
+import { getAccessToken } from "../auth/session";
 
 const mockFetch = vi.fn();
 vi.stubGlobal("fetch", mockFetch);
@@ -255,5 +261,110 @@ describe("apiRequest", () => {
       // When / Then
       await expect(apiRequest("/exercises")).rejects.toThrow("Network error");
     });
+  });
+});
+
+describe("authenticatedRequest", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("should inject the session token as the Authorization header", async () => {
+    // Given
+    vi.mocked(getAccessToken).mockResolvedValue("session-token-xyz");
+    mockFetch.mockResolvedValue(makeResponse(200, { id: 1 }));
+
+    // When
+    await authenticatedRequest("/workouts");
+
+    // Then
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Authorization: "Bearer session-token-xyz",
+        }),
+      })
+    );
+  });
+
+  it("should throw ApiError 401 when there is no active session", async () => {
+    // Given
+    vi.mocked(getAccessToken).mockResolvedValue(null);
+
+    // When / Then
+    try {
+      await authenticatedRequest("/workouts");
+      expect.fail("Should have thrown ApiError");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiError);
+      expect((error as ApiError).status).toBe(401);
+      expect((error as ApiError).isUnauthorized).toBe(true);
+    }
+  });
+
+  it("should not call fetch when there is no active session", async () => {
+    // Given
+    vi.mocked(getAccessToken).mockResolvedValue(null);
+
+    // When
+    try {
+      await authenticatedRequest("/workouts");
+    } catch {
+      // expected
+    }
+
+    // Then
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
+  it("should pass through options to the underlying apiRequest", async () => {
+    // Given
+    vi.mocked(getAccessToken).mockResolvedValue("token-abc");
+    mockFetch.mockResolvedValue(makeResponse(201, { id: 2 }));
+    const body = { name: "Deadlift" };
+
+    // When
+    await authenticatedRequest("/exercises", { method: "POST", body });
+
+    // Then
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify(body),
+      })
+    );
+  });
+
+  it("should propagate ApiError from the upstream response", async () => {
+    // Given
+    vi.mocked(getAccessToken).mockResolvedValue("valid-token");
+    mockFetch.mockResolvedValue(
+      makeResponse(403, "Forbidden", false, "text/plain")
+    );
+
+    // When / Then
+    try {
+      await authenticatedRequest("/admin/resource");
+      expect.fail("Should have thrown ApiError");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiError);
+      expect((error as ApiError).status).toBe(403);
+      expect((error as ApiError).isForbidden).toBe(true);
+    }
+  });
+
+  it("should return parsed JSON on a successful authenticated response", async () => {
+    // Given
+    const payload = { id: 5, name: "Squat" };
+    vi.mocked(getAccessToken).mockResolvedValue("token-abc");
+    mockFetch.mockResolvedValue(makeResponse(200, payload));
+
+    // When
+    const result = await authenticatedRequest<typeof payload>("/exercises/5");
+
+    // Then
+    expect(result).toEqual(payload);
   });
 });

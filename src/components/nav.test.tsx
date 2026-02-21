@@ -57,6 +57,7 @@ describe("Nav", () => {
 
     // Then
     expect(screen.getByText("John Doe")).toBeDefined();
+    expect(screen.getByRole("link", { name: /dashboard/i })).toBeDefined();
     expect(screen.getByRole("button", { name: /log out/i })).toBeDefined();
     expect(screen.queryByRole("button", { name: /log in/i })).toBeNull();
   });
@@ -75,6 +76,7 @@ describe("Nav", () => {
 
     // Then
     expect(screen.getByText("jane@example.com")).toBeDefined();
+    expect(screen.getByRole("link", { name: /dashboard/i })).toBeDefined();
     expect(screen.getByRole("button", { name: /log out/i })).toBeDefined();
   });
 

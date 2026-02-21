@@ -1,4 +1,5 @@
 import { auth0 } from "@/lib/auth0";
+import Link from "next/link";
 import { Button } from "./ui/button";
 import { loginAction, logoutAction } from "@/lib/auth/actions";
 
@@ -16,6 +17,9 @@ export async function Nav() {
         <div className="flex items-center gap-4">
           {user ? (
             <>
+              <Link href="/dashboard" className="text-sm text-muted-foreground transition hover:text-foreground">
+                Dashboard
+              </Link>
               <span className="text-sm text-muted-foreground">
                 {user.name || user.email}
               </span>

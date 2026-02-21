@@ -1,0 +1,60 @@
+"use server";
+
+import { redirect } from "next/navigation";
+
+import { ApiError } from "@/lib/api/client";
+import { auth0 } from "@/lib/auth0";
+import { type CreateProfileActionState } from "@/lib/profile/action-state";
+import { createUserProfile } from "@/lib/profile/api";
+import { validateCreateProfileForm } from "@/lib/profile/validation";
+
+export async function createProfileAction(
+  _previousState: CreateProfileActionState,
+  formData: FormData
+): Promise<CreateProfileActionState> {
+  const session = await auth0.getSession();
+  const token = session?.tokenSet.accessToken;
+  const auth0Id = session?.user.sub;
+
+  if (!token || !auth0Id) {
+    redirect("/auth/login");
+  }
+
+  const validation = validateCreateProfileForm(formData);
+  if (!validation.payload) {
+    return {
+      status: "error",
+      message: "Please fix the highlighted fields.",
+      fieldErrors: validation.fieldErrors,
+    };
+  }
+
+  try {
+    await createUserProfile(token, validation.payload, auth0Id);
+    redirect("/");
+  } catch (error) {
+    if (error instanceof ApiError) {
+      if (error.status === 409) {
+        return {
+          status: "error",
+          message: "That username is already taken. Please choose a different one.",
+          fieldErrors: {
+            username: "Username already exists.",
+          },
+        };
+      }
+
+      return {
+        status: "error",
+        message: `Could not create profile: ${error.message}`,
+        fieldErrors: {},
+      };
+    }
+
+    return {
+      status: "error",
+      message: error instanceof Error ? error.message : "Unexpected error creating profile.",
+      fieldErrors: {},
+    };
+  }
+}

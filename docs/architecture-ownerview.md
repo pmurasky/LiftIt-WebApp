@@ -72,10 +72,41 @@ const data = await apiRequest("/workouts", { token });
 
 ## API Integration
 
-- Consumes REST API from backend
+- Consumes REST API from separate backend repository
 - Base path: `/api/v1/...`
 - Uses standard HTTP verbs
 - OpenAPI contract defines API structure
+
+### Implementation
+
+| File | Role |
+|------|------|
+| `src/lib/api/client.ts` | `apiRequest()` function with type-safe error handling |
+| `src/lib/api/errors.ts` | `ApiError` class with status code helpers |
+
+### Required environment variables
+
+| Variable | Description |
+|----------|-------------|
+| `NEXT_PUBLIC_API_BASE_URL` | Backend service URL (e.g., `http://localhost:8080`) |
+| `NEXT_PUBLIC_API_BASE_PATH` | API version path (defaults to `/api/v1`) |
+
+### Example usage
+
+```ts
+import { getAccessToken } from "@/lib/auth/session";
+import { apiRequest, ApiError } from "@/lib/api/client";
+
+const token = await getAccessToken();
+
+try {
+  const workouts = await apiRequest<Workout[]>("/workouts", { token });
+} catch (error) {
+  if (error instanceof ApiError && error.isUnauthorized) {
+    // Handle auth error
+  }
+}
+```
 
 ---
 

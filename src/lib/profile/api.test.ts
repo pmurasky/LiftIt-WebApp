@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { ApiError } from "@/lib/api/client";
 
-// Mock apiRequest so we can test the real API paths without network calls.
+// Mock authenticatedRequest so real-mode tests don't hit the network or need a session.
 vi.mock("@/lib/api/client", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/lib/api/client")>();
   return {
     ...actual,
-    apiRequest: vi.fn(),
+    authenticatedRequest: vi.fn(),
   };
 });
 
-import { apiRequest } from "@/lib/api/client";
+import { authenticatedRequest } from "@/lib/api/client";
 import {
   provisionCurrentUser,
   getUserProfile,
@@ -18,7 +18,6 @@ import {
   updateUserProfile,
 } from "./api";
 
-const TOKEN = "test-token";
 const AUTH0_ID = "auth0|stub-user";
 
 const mockProfile = {
@@ -34,23 +33,27 @@ const mockProfile = {
 // Stub mode tests (PROFILE_API_STUB is active in test environment by default)
 // ---------------------------------------------------------------------------
 describe("profile API (stub mode)", () => {
-  // Each describe block gets a fresh module so the in-memory stub Map is reset.
-  // We rely on the unique stubProfileKey per test to avoid state bleed.
+  // We rely on unique stubKey values per test to avoid in-memory Map state bleed.
 
   describe("provisionCurrentUser", () => {
-    it("should resolve without calling apiRequest", async () => {
+    it("should resolve without calling authenticatedRequest", async () => {
       // When
-      await provisionCurrentUser(TOKEN, { auth0Id: AUTH0_ID, email: "u@example.com" });
+      await provisionCurrentUser({ auth0Id: AUTH0_ID, email: "u@example.com" });
 
       // Then
-      expect(apiRequest).not.toHaveBeenCalled();
+      expect(authenticatedRequest).not.toHaveBeenCalled();
     });
   });
 
   describe("getUserProfile", () => {
+    it("should throw 401 ApiError when no stub key is provided", async () => {
+      // When / Then
+      await expect(getUserProfile()).rejects.toMatchObject({ status: 401 });
+    });
+
     it("should throw 404 ApiError when no profile has been created for the key", async () => {
       // When / Then
-      await expect(getUserProfile(TOKEN, "nonexistent-key")).rejects.toMatchObject({
+      await expect(getUserProfile("nonexistent-key")).rejects.toMatchObject({
         status: 404,
       });
     });
@@ -58,14 +61,10 @@ describe("profile API (stub mode)", () => {
     it("should return a profile that was previously created", async () => {
       // Given
       const key = `${AUTH0_ID}-get-test`;
-      await createUserProfile(
-        TOKEN,
-        { username: "lifter1", unitsPreference: "metric" },
-        key
-      );
+      await createUserProfile({ username: "lifter1", unitsPreference: "metric" }, key);
 
       // When
-      const result = await getUserProfile(TOKEN, key);
+      const result = await getUserProfile(key);
 
       // Then
       expect(result.username).toBe("lifter1");
@@ -87,7 +86,7 @@ describe("profile API (stub mode)", () => {
       };
 
       // When
-      const result = await createUserProfile(TOKEN, payload, key);
+      const result = await createUserProfile(payload, key);
 
       // Then
       expect(result).toMatchObject(payload);
@@ -99,7 +98,6 @@ describe("profile API (stub mode)", () => {
 
       // When
       const result = await createUserProfile(
-        TOKEN,
         { username: "minimaluser", unitsPreference: "metric" },
         key
       );
@@ -114,24 +112,30 @@ describe("profile API (stub mode)", () => {
     it("should throw 409 ApiError when a profile already exists for the key", async () => {
       // Given
       const key = `${AUTH0_ID}-create-duplicate`;
-      await createUserProfile(TOKEN, { username: "once", unitsPreference: "metric" }, key);
+      await createUserProfile({ username: "once", unitsPreference: "metric" }, key);
 
       // When / Then
       await expect(
-        createUserProfile(TOKEN, { username: "twice", unitsPreference: "metric" }, key)
+        createUserProfile({ username: "twice", unitsPreference: "metric" }, key)
       ).rejects.toMatchObject({ status: 409 });
     });
 
-    it("should not call apiRequest in stub mode", async () => {
+    it("should throw 401 ApiError when no stub key is provided", async () => {
+      // When / Then
+      await expect(
+        createUserProfile({ username: "nokey", unitsPreference: "metric" })
+      ).rejects.toMatchObject({ status: 401 });
+    });
+
+    it("should not call authenticatedRequest in stub mode", async () => {
       // When
       await createUserProfile(
-        TOKEN,
         { username: "noapicall", unitsPreference: "metric" },
         `${AUTH0_ID}-no-api`
       );
 
       // Then
-      expect(apiRequest).not.toHaveBeenCalled();
+      expect(authenticatedRequest).not.toHaveBeenCalled();
     });
   });
 
@@ -139,11 +143,10 @@ describe("profile API (stub mode)", () => {
     it("should update and return the modified profile", async () => {
       // Given
       const key = `${AUTH0_ID}-update-test`;
-      await createUserProfile(TOKEN, { username: "updatable", unitsPreference: "metric" }, key);
+      await createUserProfile({ username: "updatable", unitsPreference: "metric" }, key);
 
       // When
       const result = await updateUserProfile(
-        TOKEN,
         { displayName: "Updated Name", unitsPreference: "imperial" },
         key
       );
@@ -158,7 +161,6 @@ describe("profile API (stub mode)", () => {
       // Given
       const key = `${AUTH0_ID}-partial-update`;
       await createUserProfile(
-        TOKEN,
         {
           username: "partial",
           unitsPreference: "metric",
@@ -169,7 +171,7 @@ describe("profile API (stub mode)", () => {
       );
 
       // When
-      const result = await updateUserProfile(TOKEN, { heightCm: 170 }, key);
+      const result = await updateUserProfile({ heightCm: 170 }, key);
 
       // Then
       expect(result.heightCm).toBe(170);
@@ -179,32 +181,35 @@ describe("profile API (stub mode)", () => {
     it("should throw 404 ApiError when no profile exists for the key", async () => {
       // When / Then
       await expect(
-        updateUserProfile(TOKEN, { displayName: "Ghost" }, "nonexistent-update-key")
+        updateUserProfile({ displayName: "Ghost" }, "nonexistent-update-key")
       ).rejects.toMatchObject({ status: 404 });
     });
 
-    it("should not call apiRequest in stub mode", async () => {
+    it("should throw 401 ApiError when no stub key is provided", async () => {
+      // When / Then
+      await expect(
+        updateUserProfile({ displayName: "Ghost" })
+      ).rejects.toMatchObject({ status: 401 });
+    });
+
+    it("should not call authenticatedRequest in stub mode", async () => {
       // Given
       const key = `${AUTH0_ID}-update-no-api`;
-      await createUserProfile(TOKEN, { username: "noapiupdate", unitsPreference: "metric" }, key);
+      await createUserProfile({ username: "noapiupdate", unitsPreference: "metric" }, key);
 
       // When
-      await updateUserProfile(TOKEN, { displayName: "X" }, key);
+      await updateUserProfile({ displayName: "X" }, key);
 
       // Then
-      expect(apiRequest).not.toHaveBeenCalled();
+      expect(authenticatedRequest).not.toHaveBeenCalled();
     });
   });
 });
 
 // ---------------------------------------------------------------------------
-// Real API path tests (force PROFILE_API_STUB off by mocking the env var
-// and re-importing the module)
+// Real API path tests (force PROFILE_API_STUB off by re-importing the module)
 // ---------------------------------------------------------------------------
 describe("profile API (real mode)", () => {
-  // We cannot easily toggle the module-level PROFILE_API_STUB const without
-  // re-importing the module. Use vi.resetModules + dynamic import per test.
-
   beforeEach(() => {
     vi.resetAllMocks();
     vi.resetModules();
@@ -213,89 +218,82 @@ describe("profile API (real mode)", () => {
   });
 
   async function importRealApi() {
-    const mod = await import("./api");
-    return mod;
+    return import("./api");
   }
 
-  it("provisionCurrentUser should call POST /users/me with token and payload", async () => {
+  it("provisionCurrentUser should call POST /users/me via authenticatedRequest", async () => {
     // Given
-    const { apiRequest: mockApiReq } = await import("@/lib/api/client");
-    vi.mocked(mockApiReq).mockResolvedValue(undefined);
+    const { authenticatedRequest: mockReq } = await import("@/lib/api/client");
+    vi.mocked(mockReq).mockResolvedValue(undefined);
     const { provisionCurrentUser: provision } = await importRealApi();
 
     // When
-    await provision(TOKEN, { auth0Id: "auth0|abc", email: "real@example.com" });
+    await provision({ auth0Id: "auth0|abc", email: "real@example.com" });
 
     // Then
-    expect(mockApiReq).toHaveBeenCalledWith("/users/me", {
+    expect(mockReq).toHaveBeenCalledWith("/users/me", {
       method: "POST",
-      token: TOKEN,
       body: { auth0Id: "auth0|abc", email: "real@example.com" },
     });
   });
 
-  it("getUserProfile should call GET /users/me/profile with token", async () => {
+  it("getUserProfile should call GET /users/me/profile via authenticatedRequest", async () => {
     // Given
-    const { apiRequest: mockApiReq } = await import("@/lib/api/client");
-    vi.mocked(mockApiReq).mockResolvedValue(mockProfile);
+    const { authenticatedRequest: mockReq } = await import("@/lib/api/client");
+    vi.mocked(mockReq).mockResolvedValue(mockProfile);
     const { getUserProfile: getProfile } = await importRealApi();
 
     // When
-    const result = await getProfile(TOKEN);
+    const result = await getProfile();
 
     // Then
-    expect(mockApiReq).toHaveBeenCalledWith("/users/me/profile", {
-      method: "GET",
-      token: TOKEN,
-    });
+    expect(mockReq).toHaveBeenCalledWith("/users/me/profile", { method: "GET" });
     expect(result).toEqual(mockProfile);
   });
 
-  it("createUserProfile should call POST /users/me/profile with token and payload", async () => {
+  it("createUserProfile should call POST /users/me/profile via authenticatedRequest", async () => {
     // Given
-    const { apiRequest: mockApiReq } = await import("@/lib/api/client");
-    vi.mocked(mockApiReq).mockResolvedValue(mockProfile);
+    const { authenticatedRequest: mockReq } = await import("@/lib/api/client");
+    vi.mocked(mockReq).mockResolvedValue(mockProfile);
     const { createUserProfile: createProfile } = await importRealApi();
     const payload = { username: "realuser", unitsPreference: "metric" as const };
 
     // When
-    const result = await createProfile(TOKEN, payload);
+    const result = await createProfile(payload);
 
     // Then
-    expect(mockApiReq).toHaveBeenCalledWith("/users/me/profile", {
+    expect(mockReq).toHaveBeenCalledWith("/users/me/profile", {
       method: "POST",
-      token: TOKEN,
       body: payload,
     });
     expect(result).toEqual(mockProfile);
   });
 
-  it("updateUserProfile should call PATCH /users/me/profile with token and payload", async () => {
+  it("updateUserProfile should call PATCH /users/me/profile via authenticatedRequest", async () => {
     // Given
-    const { apiRequest: mockApiReq } = await import("@/lib/api/client");
-    vi.mocked(mockApiReq).mockResolvedValue(mockProfile);
+    const { authenticatedRequest: mockReq } = await import("@/lib/api/client");
+    vi.mocked(mockReq).mockResolvedValue(mockProfile);
     const { updateUserProfile: updateProfile } = await importRealApi();
     const payload = { displayName: "Real Update" };
 
     // When
-    const result = await updateProfile(TOKEN, payload);
+    const result = await updateProfile(payload);
 
     // Then
-    expect(mockApiReq).toHaveBeenCalledWith("/users/me/profile", {
+    expect(mockReq).toHaveBeenCalledWith("/users/me/profile", {
       method: "PATCH",
-      token: TOKEN,
       body: payload,
     });
     expect(result).toEqual(mockProfile);
   });
 
-  it("getUserProfile should propagate ApiError from apiRequest", async () => {
+  it("getUserProfile should propagate ApiError from authenticatedRequest", async () => {
     // Given
-    const { apiRequest: mockApiReq } = await import("@/lib/api/client");
-    vi.mocked(mockApiReq).mockRejectedValue(new ApiError(404, "Not Found"));
+    const { authenticatedRequest: mockReq } = await import("@/lib/api/client");
+    vi.mocked(mockReq).mockRejectedValue(new ApiError(404, "Not Found"));
     const { getUserProfile: getProfile } = await importRealApi();
 
     // When / Then
-    await expect(getProfile(TOKEN)).rejects.toMatchObject({ status: 404 });
+    await expect(getProfile()).rejects.toMatchObject({ status: 404 });
   });
 });

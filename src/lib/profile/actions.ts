@@ -13,10 +13,9 @@ export async function createProfileAction(
   formData: FormData
 ): Promise<CreateProfileActionState> {
   const session = await auth0.getSession();
-  const token = session?.tokenSet.accessToken;
   const auth0Id = session?.user.sub;
 
-  if (!token || !auth0Id) {
+  if (!auth0Id) {
     redirect("/auth/login");
   }
 
@@ -30,7 +29,7 @@ export async function createProfileAction(
   }
 
   try {
-    await createUserProfile(token, validation.payload, auth0Id);
+    await createUserProfile(validation.payload, auth0Id);
     redirect("/");
   } catch (error: unknown) {
     if (error instanceof ApiError) {
@@ -64,10 +63,9 @@ export async function updateProfileAction(
   formData: FormData
 ): Promise<UpdateProfileActionState> {
   const session = await auth0.getSession();
-  const token = session?.tokenSet.accessToken;
   const auth0Id = session?.user.sub;
 
-  if (!token || !auth0Id) {
+  if (!auth0Id) {
     redirect("/auth/login");
   }
 
@@ -81,7 +79,7 @@ export async function updateProfileAction(
   }
 
   try {
-    await updateUserProfile(token, validation.payload, auth0Id);
+    await updateUserProfile(validation.payload, auth0Id);
     return {
       status: "success",
       message: "Profile updated.",

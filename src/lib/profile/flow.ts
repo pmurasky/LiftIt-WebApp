@@ -40,10 +40,7 @@ export async function resolveProfileFlow(): Promise<ProfileFlowState> {
   }
 
   try {
-    await provisionCurrentUser(token, {
-      auth0Id: user.sub,
-      email: user.email,
-    });
+    await provisionCurrentUser({ auth0Id: user.sub, email: user.email }, user.sub);
   } catch (error) {
     if (!(error instanceof ApiError && error.status === 409)) {
       return {
@@ -57,7 +54,7 @@ export async function resolveProfileFlow(): Promise<ProfileFlowState> {
   }
 
   try {
-    const profile = await getUserProfile(token, user.sub);
+    const profile = await getUserProfile(user.sub);
     return { status: "ready", profile };
   } catch (error) {
     if (error instanceof ApiError && error.isNotFound) {

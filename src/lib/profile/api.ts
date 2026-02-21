@@ -1,4 +1,4 @@
-import { apiRequest, ApiError } from "@/lib/api/client";
+import { authenticatedRequest, ApiError } from "@/lib/api/client";
 
 export type UnitsPreference = "metric" | "imperial";
 export type Gender = "male" | "female" | "non_binary" | "prefer_not_to_say";
@@ -87,57 +87,54 @@ function createStubProfile(auth0Id: string, payload: CreateUserProfileRequest): 
   return profile;
 }
 
-export async function provisionCurrentUser(token: string, payload: ProvisionUserRequest) {
+export async function provisionCurrentUser(payload: ProvisionUserRequest, stubKey?: string) {
   if (PROFILE_API_STUB) {
     return;
   }
 
-  return await apiRequest<void>("/users/me", {
+  return await authenticatedRequest<void>("/users/me", {
     method: "POST",
-    token,
     body: payload,
   });
 }
 
-export async function getUserProfile(token: string, stubProfileKey?: string): Promise<UserProfile> {
+export async function getUserProfile(stubKey?: string): Promise<UserProfile> {
   if (PROFILE_API_STUB) {
-    return getStubProfile(stubProfileKey ?? token);
+    if (!stubKey) throw new ApiError(401, "No active session");
+    return getStubProfile(stubKey);
   }
 
-  return await apiRequest<UserProfile>("/users/me/profile", {
+  return await authenticatedRequest<UserProfile>("/users/me/profile", {
     method: "GET",
-    token,
   });
 }
 
 export async function createUserProfile(
-  token: string,
   payload: CreateUserProfileRequest,
-  stubProfileKey?: string
+  stubKey?: string
 ): Promise<UserProfile> {
   if (PROFILE_API_STUB) {
-    return createStubProfile(stubProfileKey ?? token, payload);
+    if (!stubKey) throw new ApiError(401, "No active session");
+    return createStubProfile(stubKey, payload);
   }
 
-  return await apiRequest<UserProfile>("/users/me/profile", {
+  return await authenticatedRequest<UserProfile>("/users/me/profile", {
     method: "POST",
-    token,
     body: payload,
   });
 }
 
 export async function updateUserProfile(
-  token: string,
   payload: UpdateUserProfileRequest,
-  stubProfileKey?: string
+  stubKey?: string
 ): Promise<UserProfile> {
   if (PROFILE_API_STUB) {
-    return updateStubProfile(stubProfileKey ?? token, payload);
+    if (!stubKey) throw new ApiError(401, "No active session");
+    return updateStubProfile(stubKey, payload);
   }
 
-  return await apiRequest<UserProfile>("/users/me/profile", {
+  return await authenticatedRequest<UserProfile>("/users/me/profile", {
     method: "PATCH",
-    token,
     body: payload,
   });
 }

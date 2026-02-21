@@ -72,11 +72,11 @@ describe("createProfileAction", () => {
       expect(redirect).toHaveBeenCalledWith("/auth/login");
     });
 
-    it("should redirect to /auth/login when session has no access token", async () => {
+    it("should redirect to /auth/login when session has no sub", async () => {
       // Given
       vi.mocked(auth0.getSession).mockResolvedValue({
-        user: { sub: "auth0|123" },
-        tokenSet: {},
+        user: {},
+        tokenSet: { accessToken: "token-abc" },
       } as never);
 
       // When
@@ -128,7 +128,7 @@ describe("createProfileAction", () => {
       expect(redirect).toHaveBeenCalledWith("/");
     });
 
-    it("should call createUserProfile with the token, payload, and auth0Id", async () => {
+    it("should call createUserProfile with the payload and auth0Id stub key", async () => {
       // Given
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession as never);
       vi.mocked(createUserProfile).mockResolvedValue(mockProfile);
@@ -138,7 +138,6 @@ describe("createProfileAction", () => {
 
       // Then
       expect(createUserProfile).toHaveBeenCalledWith(
-        "token-abc",
         expect.objectContaining({ username: "lifter1", unitsPreference: "metric" }),
         "auth0|123"
       );
@@ -261,7 +260,7 @@ describe("updateProfileAction", () => {
       expect(result.status).toBe("success");
     });
 
-    it("should call updateUserProfile with the token, payload, and auth0Id", async () => {
+    it("should call updateUserProfile with the payload and auth0Id stub key", async () => {
       // Given
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession as never);
       vi.mocked(updateUserProfile).mockResolvedValue(mockProfile);
@@ -271,7 +270,6 @@ describe("updateProfileAction", () => {
 
       // Then
       expect(updateUserProfile).toHaveBeenCalledWith(
-        "token-abc",
         expect.objectContaining({ unitsPreference: "metric" }),
         "auth0|123"
       );

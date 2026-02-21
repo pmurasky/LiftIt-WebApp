@@ -8,23 +8,7 @@ import {
   initialCreateProfileActionState,
 } from "@/lib/profile/action-state";
 import { createProfileAction } from "@/lib/profile/actions";
-
-function cmToInches(heightCm: number): number {
-  return heightCm / 2.54;
-}
-
-function inchesToCm(heightInches: number): number {
-  return heightInches * 2.54;
-}
-
-function toNumberOrNull(value: string): number | null {
-  const parsed = Number.parseFloat(value);
-  if (!Number.isFinite(parsed)) {
-    return null;
-  }
-
-  return parsed;
-}
+import { cmToInches, inchesToCm, toNumberOrNull } from "@/lib/profile/height";
 
 export function ProfileOnboardingForm() {
   const [state, formAction, isPending] = useActionState<CreateProfileActionState, FormData>(

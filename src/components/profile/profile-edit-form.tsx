@@ -1,13 +1,14 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useEffect, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
-  type CreateProfileActionState,
-  initialCreateProfileActionState,
+  type UpdateProfileActionState,
+  initialUpdateProfileActionState,
 } from "@/lib/profile/action-state";
-import { createProfileAction } from "@/lib/profile/actions";
+import { updateProfileAction } from "@/lib/profile/actions";
+import type { UserProfile } from "@/lib/profile/api";
 
 function cmToInches(heightCm: number): number {
   return heightCm / 2.54;
@@ -22,64 +23,69 @@ function toNumberOrNull(value: string): number | null {
   if (!Number.isFinite(parsed)) {
     return null;
   }
-
   return parsed;
 }
 
-export function ProfileOnboardingForm() {
-  const [state, formAction, isPending] = useActionState<CreateProfileActionState, FormData>(
-    createProfileAction,
-    initialCreateProfileActionState
+function formatHeightForUnits(heightCm: number | null, units: "metric" | "imperial"): string {
+  if (heightCm === null) return "";
+  if (units === "metric") return String(Math.round(heightCm * 10) / 10);
+  return String(Math.round(cmToInches(heightCm) * 10) / 10);
+}
+
+interface ProfileEditFormProps {
+  profile: UserProfile;
+}
+
+export function ProfileEditForm({ profile }: ProfileEditFormProps) {
+  const [state, formAction, isPending] = useActionState<UpdateProfileActionState, FormData>(
+    updateProfileAction,
+    initialUpdateProfileActionState
   );
-  const [unitsPreference, setUnitsPreference] = useState<"metric" | "imperial">("metric");
-  const [heightInput, setHeightInput] = useState("");
+
+  const [unitsPreference, setUnitsPreference] = useState<"metric" | "imperial">(
+    profile.unitsPreference
+  );
+  const [heightInput, setHeightInput] = useState<string>(
+    formatHeightForUnits(profile.heightCm, profile.unitsPreference)
+  );
+
+  // Keep height display in sync when units toggle
+  function handleUnitsPreferenceChange(nextUnits: "metric" | "imperial") {
+    if (nextUnits === unitsPreference) return;
+
+    const numericHeight = toNumberOrNull(heightInput);
+    if (numericHeight !== null) {
+      const converted =
+        nextUnits === "metric" ? inchesToCm(numericHeight) : cmToInches(numericHeight);
+      setHeightInput((Math.round(converted * 10) / 10).toString());
+    }
+    setUnitsPreference(nextUnits);
+  }
 
   const heightCmValue = useMemo(() => {
     const numericHeight = toNumberOrNull(heightInput);
-    if (numericHeight === null) {
-      return "";
-    }
-
-    const normalizedHeight =
+    if (numericHeight === null) return "";
+    const normalized =
       unitsPreference === "metric" ? numericHeight : inchesToCm(numericHeight);
-    return String(Math.round(normalizedHeight * 100) / 100);
+    return String(Math.round(normalized * 100) / 100);
   }, [heightInput, unitsPreference]);
 
-  function handleUnitsPreferenceChange(nextUnits: "metric" | "imperial") {
-    if (nextUnits === unitsPreference) {
-      return;
+  // Reset height display if units preference differs from current profile after save
+  useEffect(() => {
+    if (state.status === "success") {
+      // nothing to reset — height state is already correct
     }
-
-    const numericHeight = toNumberOrNull(heightInput);
-    if (numericHeight === null) {
-      setUnitsPreference(nextUnits);
-      return;
-    }
-
-    const convertedHeight =
-      nextUnits === "metric" ? inchesToCm(numericHeight) : cmToInches(numericHeight);
-    setUnitsPreference(nextUnits);
-    setHeightInput((Math.round(convertedHeight * 10) / 10).toString());
-  }
+  }, [state.status]);
 
   return (
     <form action={formAction} className="mt-8 grid gap-5">
+      {/* Username — read-only */}
       <div className="grid gap-2">
-        <label htmlFor="username" className="text-sm font-medium">
-          Username *
-        </label>
-        <input
-          id="username"
-          name="username"
-          required
-          minLength={1}
-          maxLength={30}
-          className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder="trainwithalex"
-        />
-        {state.fieldErrors.username ? (
-          <p className="text-sm text-red-300">{state.fieldErrors.username}</p>
-        ) : null}
+        <label className="text-sm font-medium">Username</label>
+        <p className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+          {profile.username}
+        </p>
+        <p className="text-xs text-muted-foreground">Username cannot be changed.</p>
       </div>
 
       <div className="grid gap-2 sm:max-w-xs">
@@ -90,9 +96,7 @@ export function ProfileOnboardingForm() {
           id="unitsPreference"
           name="unitsPreference"
           value={unitsPreference}
-          onChange={(event) =>
-            handleUnitsPreferenceChange(event.target.value as "metric" | "imperial")
-          }
+          onChange={(e) => handleUnitsPreferenceChange(e.target.value as "metric" | "imperial")}
           className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
         >
           <option value="metric">Metric</option>
@@ -111,6 +115,7 @@ export function ProfileOnboardingForm() {
           id="displayName"
           name="displayName"
           maxLength={100}
+          defaultValue={profile.displayName ?? ""}
           className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="Alex"
         />
@@ -127,14 +132,14 @@ export function ProfileOnboardingForm() {
           <select
             id="gender"
             name="gender"
+            defaultValue={profile.gender ?? ""}
             className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-            defaultValue=""
           >
-            <option value="">Not specified</option>
+            <option value="">Prefer not to say</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="non_binary">Non-binary</option>
-            <option value="prefer_not_to_say">Prefer not to say</option>
+            <option value="prefer_not_to_say">Prefer not to say (explicit)</option>
           </select>
           {state.fieldErrors.gender ? (
             <p className="text-sm text-red-300">{state.fieldErrors.gender}</p>
@@ -149,6 +154,7 @@ export function ProfileOnboardingForm() {
             id="birthdate"
             name="birthdate"
             type="date"
+            defaultValue={profile.birthdate ?? ""}
             className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           />
           {state.fieldErrors.birthdate ? (
@@ -165,7 +171,7 @@ export function ProfileOnboardingForm() {
           id="height"
           inputMode="decimal"
           value={heightInput}
-          onChange={(event) => setHeightInput(event.target.value)}
+          onChange={(e) => setHeightInput(e.target.value)}
           className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           placeholder={unitsPreference === "metric" ? "178" : "70"}
         />
@@ -175,6 +181,12 @@ export function ProfileOnboardingForm() {
         ) : null}
       </div>
 
+      {state.status === "success" && state.message ? (
+        <p className="rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-200">
+          {state.message}
+        </p>
+      ) : null}
+
       {state.status === "error" && state.message ? (
         <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
           {state.message}
@@ -183,7 +195,7 @@ export function ProfileOnboardingForm() {
 
       <div className="pt-2">
         <Button type="submit" size="lg" disabled={isPending}>
-          {isPending ? "Creating profile..." : "Create Profile"}
+          {isPending ? "Saving..." : "Save Changes"}
         </Button>
       </div>
     </form>

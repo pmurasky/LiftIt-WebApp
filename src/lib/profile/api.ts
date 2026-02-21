@@ -21,6 +21,14 @@ export interface CreateUserProfileRequest {
   heightCm?: number | null;
 }
 
+export interface UpdateUserProfileRequest {
+  displayName?: string | null;
+  gender?: Gender | null;
+  birthdate?: string | null;
+  heightCm?: number | null;
+  unitsPreference?: UnitsPreference;
+}
+
 export interface ProvisionUserRequest {
   auth0Id: string;
   email: string;
@@ -38,6 +46,25 @@ function getStubProfile(auth0Id: string): UserProfile {
   }
 
   throw new ApiError(404, "Profile not found", { message: "Profile not found" });
+}
+
+function updateStubProfile(auth0Id: string, payload: UpdateUserProfileRequest): UserProfile {
+  const existing = stubProfilesByAuth0Id.get(auth0Id);
+  if (!existing) {
+    throw new ApiError(404, "Profile not found", { message: "Profile not found" });
+  }
+
+  const updated: UserProfile = {
+    ...existing,
+    ...(payload.unitsPreference !== undefined ? { unitsPreference: payload.unitsPreference } : {}),
+    ...(payload.displayName !== undefined ? { displayName: payload.displayName } : {}),
+    ...(payload.gender !== undefined ? { gender: payload.gender } : {}),
+    ...(payload.birthdate !== undefined ? { birthdate: payload.birthdate } : {}),
+    ...(payload.heightCm !== undefined ? { heightCm: payload.heightCm } : {}),
+  };
+
+  stubProfilesByAuth0Id.set(auth0Id, updated);
+  return updated;
 }
 
 function createStubProfile(auth0Id: string, payload: CreateUserProfileRequest): UserProfile {
@@ -90,6 +117,22 @@ export async function createUserProfile(
 
   return await apiRequest<UserProfile>("/users/me/profile", {
     method: "POST",
+    token,
+    body: payload,
+  });
+}
+
+export async function updateUserProfile(
+  token: string,
+  payload: UpdateUserProfileRequest,
+  stubProfileKey?: string
+): Promise<UserProfile> {
+  if (PROFILE_API_STUB) {
+    return updateStubProfile(stubProfileKey ?? token, payload);
+  }
+
+  return await apiRequest<UserProfile>("/users/me/profile", {
+    method: "PATCH",
     token,
     body: payload,
   });

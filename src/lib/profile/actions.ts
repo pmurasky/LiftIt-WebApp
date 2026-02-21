@@ -4,9 +4,9 @@ import { redirect } from "next/navigation";
 
 import { ApiError } from "@/lib/api/client";
 import { auth0 } from "@/lib/auth0";
-import { type CreateProfileActionState } from "@/lib/profile/action-state";
-import { createUserProfile } from "@/lib/profile/api";
-import { validateCreateProfileForm } from "@/lib/profile/validation";
+import { type CreateProfileActionState, type UpdateProfileActionState } from "@/lib/profile/action-state";
+import { createUserProfile, updateUserProfile } from "@/lib/profile/api";
+import { validateCreateProfileForm, validateUpdateProfileForm } from "@/lib/profile/validation";
 
 export async function createProfileAction(
   _previousState: CreateProfileActionState,
@@ -32,7 +32,7 @@ export async function createProfileAction(
   try {
     await createUserProfile(token, validation.payload, auth0Id);
     redirect("/");
-  } catch (error) {
+  } catch (error: unknown) {
     if (error instanceof ApiError) {
       if (error.status === 409) {
         return {
@@ -54,6 +54,51 @@ export async function createProfileAction(
     return {
       status: "error",
       message: error instanceof Error ? error.message : "Unexpected error creating profile.",
+      fieldErrors: {},
+    };
+  }
+}
+
+export async function updateProfileAction(
+  _previousState: UpdateProfileActionState,
+  formData: FormData
+): Promise<UpdateProfileActionState> {
+  const session = await auth0.getSession();
+  const token = session?.tokenSet.accessToken;
+  const auth0Id = session?.user.sub;
+
+  if (!token || !auth0Id) {
+    redirect("/auth/login");
+  }
+
+  const validation = validateUpdateProfileForm(formData);
+  if (!validation.payload) {
+    return {
+      status: "error",
+      message: "Please fix the highlighted fields.",
+      fieldErrors: validation.fieldErrors,
+    };
+  }
+
+  try {
+    await updateUserProfile(token, validation.payload, auth0Id);
+    return {
+      status: "success",
+      message: "Profile updated.",
+      fieldErrors: {},
+    };
+  } catch (error: unknown) {
+    if (error instanceof ApiError) {
+      return {
+        status: "error",
+        message: `Could not update profile: ${error.message}`,
+        fieldErrors: {},
+      };
+    }
+
+    return {
+      status: "error",
+      message: error instanceof Error ? error.message : "Unexpected error updating profile.",
       fieldErrors: {},
     };
   }

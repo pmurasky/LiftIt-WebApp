@@ -20,6 +20,9 @@ export async function Nav() {
               <Link href="/dashboard" className="text-sm text-muted-foreground transition hover:text-foreground">
                 Dashboard
               </Link>
+              <Link href="/profile" className="text-sm text-muted-foreground transition hover:text-foreground">
+                Profile
+              </Link>
               <span className="text-sm text-muted-foreground">
                 {user.name || user.email}
               </span>

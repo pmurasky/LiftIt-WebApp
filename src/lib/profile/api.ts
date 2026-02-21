@@ -88,6 +88,10 @@ function createStubProfile(auth0Id: string, payload: CreateUserProfileRequest): 
 }
 
 export async function provisionCurrentUser(token: string, payload: ProvisionUserRequest) {
+  if (PROFILE_API_STUB) {
+    return;
+  }
+
   return await apiRequest<void>("/users/me", {
     method: "POST",
     token,

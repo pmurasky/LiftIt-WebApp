@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useMemo, useState } from "react";
+import { useActionState, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -70,13 +70,6 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
     return String(Math.round(normalized * 100) / 100);
   }, [heightInput, unitsPreference]);
 
-  // Reset height display if units preference differs from current profile after save
-  useEffect(() => {
-    if (state.status === "success") {
-      // nothing to reset — height state is already correct
-    }
-  }, [state.status]);
-
   return (
     <form action={formAction} className="mt-8 grid gap-5">
       {/* Username — read-only */}
@@ -135,11 +128,11 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             defaultValue={profile.gender ?? ""}
             className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <option value="">Prefer not to say</option>
+            <option value="">Not specified</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
             <option value="non_binary">Non-binary</option>
-            <option value="prefer_not_to_say">Prefer not to say (explicit)</option>
+            <option value="prefer_not_to_say">Prefer not to say</option>
           </select>
           {state.fieldErrors.gender ? (
             <p className="text-sm text-red-300">{state.fieldErrors.gender}</p>

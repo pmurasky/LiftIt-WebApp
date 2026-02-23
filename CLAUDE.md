@@ -37,3 +37,10 @@ Use this file for LiftIt-specific context. For shared engineering standards and 
 ## ADRs
 
 - Architecture decisions live in `docs/adr/`.
+
+## Styling Decision
+
+- Reuse shared styling tokens/primitives to keep look-and-feel consistent across pages/components.
+- Avoid duplicating page-level visual rules when shared styling primitives exist.
+- Track implementation in epic `#32` and issues `#28`, `#29`, `#30`, `#31`.
+- See `docs/adr/0002-design-v1-direction-and-non-goals.md` for the accepted decision.

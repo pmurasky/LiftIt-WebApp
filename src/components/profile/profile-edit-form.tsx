@@ -36,7 +36,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       {/* Username — read-only */}
       <div className="grid gap-2">
         <label className="text-sm font-medium">Username</label>
-        <p className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+        <p className="flex h-11 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
           {profile.username}
         </p>
         <p className="text-xs text-muted-foreground">Username cannot be changed.</p>
@@ -44,7 +44,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
       <div className="grid gap-2 sm:max-w-xs">
         <p className="text-sm font-medium">Units Preference *</p>
-        <p className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+        <p className="flex h-11 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
           Imperial (lb, ft/in)
         </p>
         {state.fieldErrors.unitsPreference ? (
@@ -61,7 +61,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
           name="displayName"
           maxLength={100}
           defaultValue={profile.displayName ?? ""}
-          className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="Alex"
         />
         <p className="text-xs text-muted-foreground">How your name appears in the app.</p>
@@ -79,7 +79,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             id="gender"
             name="gender"
             defaultValue={profile.gender ?? ""}
-            className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           >
             <option value="">Not specified</option>
             <option value="male">Male</option>
@@ -101,7 +101,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
             name="birthdate"
             type="date"
             defaultValue={profile.birthdate ?? ""}
-            className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           />
           {state.fieldErrors.birthdate ? (
             <p className="text-sm text-red-300">{state.fieldErrors.birthdate}</p>
@@ -121,7 +121,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
               inputMode="decimal"
               value={heightFeetInput}
               onChange={(event) => setHeightFeetInput(event.target.value)}
-              className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
               placeholder="5"
             />
           </div>
@@ -134,7 +134,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
               inputMode="decimal"
               value={heightInchesInput}
               onChange={(event) => setHeightInchesInput(event.target.value)}
-              className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
               placeholder="10"
             />
           </div>

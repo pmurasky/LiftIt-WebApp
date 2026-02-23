@@ -36,7 +36,7 @@ export function ProfileOnboardingForm() {
           required
           minLength={1}
           maxLength={30}
-          className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="trainwithalex"
         />
         {state.fieldErrors.username ? (
@@ -46,7 +46,7 @@ export function ProfileOnboardingForm() {
 
       <div className="grid gap-2 sm:max-w-xs">
         <p className="text-sm font-medium">Units Preference *</p>
-        <p className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+        <p className="flex h-11 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
           Imperial (lb, ft/in)
         </p>
         {state.fieldErrors.unitsPreference ? (
@@ -62,7 +62,7 @@ export function ProfileOnboardingForm() {
           id="displayName"
           name="displayName"
           maxLength={100}
-          className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+          className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="Alex"
         />
         <p className="text-xs text-muted-foreground">How your name appears in the app.</p>
@@ -79,7 +79,7 @@ export function ProfileOnboardingForm() {
           <select
             id="gender"
             name="gender"
-            className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
             defaultValue=""
           >
             <option value="">Not specified</option>
@@ -101,7 +101,7 @@ export function ProfileOnboardingForm() {
             id="birthdate"
             name="birthdate"
             type="date"
-            className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+            className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           />
           {state.fieldErrors.birthdate ? (
             <p className="text-sm text-red-300">{state.fieldErrors.birthdate}</p>
@@ -121,7 +121,7 @@ export function ProfileOnboardingForm() {
               inputMode="decimal"
               value={heightFeetInput}
               onChange={(event) => setHeightFeetInput(event.target.value)}
-              className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
               placeholder="5"
             />
           </div>
@@ -134,7 +134,7 @@ export function ProfileOnboardingForm() {
               inputMode="decimal"
               value={heightInchesInput}
               onChange={(event) => setHeightInchesInput(event.target.value)}
-              className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
               placeholder="10"
             />
           </div>

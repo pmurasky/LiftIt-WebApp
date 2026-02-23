@@ -8,14 +8,13 @@ import {
   initialCreateProfileActionState,
 } from "@/lib/profile/action-state";
 import { createProfileAction } from "@/lib/profile/actions";
-import { cmToInches, inchesToCm, toNumberOrNull } from "@/lib/profile/height";
+import { inchesToCm, toNumberOrNull } from "@/lib/profile/height";
 
 export function ProfileOnboardingForm() {
   const [state, formAction, isPending] = useActionState<CreateProfileActionState, FormData>(
     createProfileAction,
     initialCreateProfileActionState
   );
-  const [unitsPreference, setUnitsPreference] = useState<"metric" | "imperial">("metric");
   const [heightInput, setHeightInput] = useState("");
 
   const heightCmValue = useMemo(() => {
@@ -24,30 +23,13 @@ export function ProfileOnboardingForm() {
       return "";
     }
 
-    const normalizedHeight =
-      unitsPreference === "metric" ? numericHeight : inchesToCm(numericHeight);
-    return String(Math.round(normalizedHeight * 100) / 100);
-  }, [heightInput, unitsPreference]);
-
-  function handleUnitsPreferenceChange(nextUnits: "metric" | "imperial") {
-    if (nextUnits === unitsPreference) {
-      return;
-    }
-
-    const numericHeight = toNumberOrNull(heightInput);
-    if (numericHeight === null) {
-      setUnitsPreference(nextUnits);
-      return;
-    }
-
-    const convertedHeight =
-      nextUnits === "metric" ? inchesToCm(numericHeight) : cmToInches(numericHeight);
-    setUnitsPreference(nextUnits);
-    setHeightInput((Math.round(convertedHeight * 10) / 10).toString());
-  }
+    return String(Math.round(inchesToCm(numericHeight) * 100) / 100);
+  }, [heightInput]);
 
   return (
     <form action={formAction} className="mt-8 grid gap-5">
+      <input type="hidden" name="unitsPreference" value="imperial" />
+
       <div className="grid gap-2">
         <label htmlFor="username" className="text-sm font-medium">
           Username *
@@ -67,21 +49,10 @@ export function ProfileOnboardingForm() {
       </div>
 
       <div className="grid gap-2 sm:max-w-xs">
-        <label htmlFor="unitsPreference" className="text-sm font-medium">
-          Units Preference *
-        </label>
-        <select
-          id="unitsPreference"
-          name="unitsPreference"
-          value={unitsPreference}
-          onChange={(event) =>
-            handleUnitsPreferenceChange(event.target.value as "metric" | "imperial")
-          }
-          className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <option value="metric">Metric</option>
-          <option value="imperial">Imperial</option>
-        </select>
+        <p className="text-sm font-medium">Units Preference *</p>
+        <p className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+          Imperial (in)
+        </p>
         {state.fieldErrors.unitsPreference ? (
           <p className="text-sm text-red-300">{state.fieldErrors.unitsPreference}</p>
         ) : null}
@@ -98,6 +69,7 @@ export function ProfileOnboardingForm() {
           className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="Alex"
         />
+        <p className="text-xs text-muted-foreground">How your name appears in the app.</p>
         {state.fieldErrors.displayName ? (
           <p className="text-sm text-red-300">{state.fieldErrors.displayName}</p>
         ) : null}
@@ -143,7 +115,7 @@ export function ProfileOnboardingForm() {
 
       <div className="grid gap-2 sm:max-w-xs">
         <label htmlFor="height" className="text-sm font-medium">
-          Height ({unitsPreference === "metric" ? "cm" : "in"})
+          Height (in)
         </label>
         <input
           id="height"
@@ -151,7 +123,7 @@ export function ProfileOnboardingForm() {
           value={heightInput}
           onChange={(event) => setHeightInput(event.target.value)}
           className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder={unitsPreference === "metric" ? "178" : "70"}
+          placeholder="70"
         />
         <input type="hidden" name="heightCm" value={heightCmValue} />
         {state.fieldErrors.heightCm ? (

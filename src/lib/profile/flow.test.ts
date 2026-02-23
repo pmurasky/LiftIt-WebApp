@@ -130,7 +130,7 @@ describe("resolveProfileFlow", () => {
       expect(result).toEqual({ status: "ready", profile: mockProfile });
     });
 
-    it("should pass the user info and auth0Id to provisionCurrentUser", async () => {
+    it("should pass the user info to provisionCurrentUser", async () => {
       // Given
       vi.mocked(auth0.getSession).mockResolvedValue(mockSession as never);
       vi.mocked(provisionCurrentUser).mockResolvedValue(undefined);
@@ -140,10 +140,10 @@ describe("resolveProfileFlow", () => {
       await resolveProfileFlow();
 
       // Then
-      expect(provisionCurrentUser).toHaveBeenCalledWith(
-        { auth0Id: "auth0|123", email: "user@example.com" },
-        "auth0|123"
-      );
+      expect(provisionCurrentUser).toHaveBeenCalledWith({
+        auth0Id: "auth0|123",
+        email: "user@example.com",
+      });
     });
 
     it("should pass the auth0Id stub key to getUserProfile", async () => {

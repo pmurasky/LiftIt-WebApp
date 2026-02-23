@@ -40,7 +40,7 @@ export async function resolveProfileFlow(): Promise<ProfileFlowState> {
   }
 
   try {
-    await provisionCurrentUser({ auth0Id: user.sub, email: user.email }, user.sub);
+    await provisionCurrentUser({ auth0Id: user.sub, email: user.email });
   } catch (error) {
     if (!(error instanceof ApiError && error.status === 409)) {
       return {

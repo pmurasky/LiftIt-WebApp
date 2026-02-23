@@ -9,7 +9,7 @@ import {
 } from "@/lib/profile/action-state";
 import { updateProfileAction } from "@/lib/profile/actions";
 import type { UserProfile } from "@/lib/profile/api";
-import { cmToInches, formatHeightForUnits, inchesToCm, toNumberOrNull } from "@/lib/profile/height";
+import { formatHeightForUnits, inchesToCm, toNumberOrNull } from "@/lib/profile/height";
 
 interface ProfileEditFormProps {
   profile: UserProfile;
@@ -21,36 +21,20 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
     initialUpdateProfileActionState
   );
 
-  const [unitsPreference, setUnitsPreference] = useState<"metric" | "imperial">(
-    profile.unitsPreference
-  );
   const [heightInput, setHeightInput] = useState<string>(
-    formatHeightForUnits(profile.heightCm, profile.unitsPreference)
+    formatHeightForUnits(profile.heightCm, "imperial")
   );
-
-  // Keep height display in sync when units toggle
-  function handleUnitsPreferenceChange(nextUnits: "metric" | "imperial") {
-    if (nextUnits === unitsPreference) return;
-
-    const numericHeight = toNumberOrNull(heightInput);
-    if (numericHeight !== null) {
-      const converted =
-        nextUnits === "metric" ? inchesToCm(numericHeight) : cmToInches(numericHeight);
-      setHeightInput((Math.round(converted * 10) / 10).toString());
-    }
-    setUnitsPreference(nextUnits);
-  }
 
   const heightCmValue = useMemo(() => {
     const numericHeight = toNumberOrNull(heightInput);
     if (numericHeight === null) return "";
-    const normalized =
-      unitsPreference === "metric" ? numericHeight : inchesToCm(numericHeight);
-    return String(Math.round(normalized * 100) / 100);
-  }, [heightInput, unitsPreference]);
+    return String(Math.round(inchesToCm(numericHeight) * 100) / 100);
+  }, [heightInput]);
 
   return (
     <form action={formAction} className="mt-8 grid gap-5">
+      <input type="hidden" name="unitsPreference" value="imperial" />
+
       {/* Username — read-only */}
       <div className="grid gap-2">
         <label className="text-sm font-medium">Username</label>
@@ -61,19 +45,10 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       </div>
 
       <div className="grid gap-2 sm:max-w-xs">
-        <label htmlFor="unitsPreference" className="text-sm font-medium">
-          Units Preference *
-        </label>
-        <select
-          id="unitsPreference"
-          name="unitsPreference"
-          value={unitsPreference}
-          onChange={(e) => handleUnitsPreferenceChange(e.target.value as "metric" | "imperial")}
-          className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          <option value="metric">Metric</option>
-          <option value="imperial">Imperial</option>
-        </select>
+        <p className="text-sm font-medium">Units Preference *</p>
+        <p className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+          Imperial (in)
+        </p>
         {state.fieldErrors.unitsPreference ? (
           <p className="text-sm text-red-300">{state.fieldErrors.unitsPreference}</p>
         ) : null}
@@ -91,6 +66,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
           className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
           placeholder="Alex"
         />
+        <p className="text-xs text-muted-foreground">How your name appears in the app.</p>
         {state.fieldErrors.displayName ? (
           <p className="text-sm text-red-300">{state.fieldErrors.displayName}</p>
         ) : null}
@@ -137,7 +113,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
       <div className="grid gap-2 sm:max-w-xs">
         <label htmlFor="height" className="text-sm font-medium">
-          Height ({unitsPreference === "metric" ? "cm" : "in"})
+          Height (in)
         </label>
         <input
           id="height"
@@ -145,7 +121,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
           value={heightInput}
           onChange={(e) => setHeightInput(e.target.value)}
           className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder={unitsPreference === "metric" ? "178" : "70"}
+          placeholder="70"
         />
         <input type="hidden" name="heightCm" value={heightCmValue} />
         {state.fieldErrors.heightCm ? (

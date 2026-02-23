@@ -87,7 +87,7 @@ function createStubProfile(auth0Id: string, payload: CreateUserProfileRequest): 
   return profile;
 }
 
-export async function provisionCurrentUser(payload: ProvisionUserRequest, stubKey?: string) {
+export async function provisionCurrentUser(payload: ProvisionUserRequest) {
   if (PROFILE_API_STUB) {
     return;
   }

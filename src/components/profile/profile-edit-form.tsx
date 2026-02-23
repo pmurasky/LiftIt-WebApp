@@ -9,7 +9,7 @@ import {
 } from "@/lib/profile/action-state";
 import { updateProfileAction } from "@/lib/profile/actions";
 import type { UserProfile } from "@/lib/profile/api";
-import { formatHeightForUnits, inchesToCm, toNumberOrNull } from "@/lib/profile/height";
+import { formatHeightForImperialParts, imperialHeightInputsToCm } from "@/lib/profile/height";
 
 interface ProfileEditFormProps {
   profile: UserProfile;
@@ -21,15 +21,13 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
     initialUpdateProfileActionState
   );
 
-  const [heightInput, setHeightInput] = useState<string>(
-    formatHeightForUnits(profile.heightCm, "imperial")
-  );
+  const initialHeightParts = formatHeightForImperialParts(profile.heightCm);
+  const [heightFeetInput, setHeightFeetInput] = useState<string>(initialHeightParts.feet);
+  const [heightInchesInput, setHeightInchesInput] = useState<string>(initialHeightParts.inches);
 
   const heightCmValue = useMemo(() => {
-    const numericHeight = toNumberOrNull(heightInput);
-    if (numericHeight === null) return "";
-    return String(Math.round(inchesToCm(numericHeight) * 100) / 100);
-  }, [heightInput]);
+    return imperialHeightInputsToCm(heightFeetInput, heightInchesInput);
+  }, [heightFeetInput, heightInchesInput]);
 
   return (
     <form action={formAction} className="mt-8 grid gap-5">
@@ -47,7 +45,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       <div className="grid gap-2 sm:max-w-xs">
         <p className="text-sm font-medium">Units Preference *</p>
         <p className="flex h-10 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
-          Imperial (in)
+          Imperial (lb, ft/in)
         </p>
         {state.fieldErrors.unitsPreference ? (
           <p className="text-sm text-red-300">{state.fieldErrors.unitsPreference}</p>
@@ -112,17 +110,35 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
       </div>
 
       <div className="grid gap-2 sm:max-w-xs">
-        <label htmlFor="height" className="text-sm font-medium">
-          Height (in)
-        </label>
-        <input
-          id="height"
-          inputMode="decimal"
-          value={heightInput}
-          onChange={(e) => setHeightInput(e.target.value)}
-          className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
-          placeholder="70"
-        />
+        <p className="text-sm font-medium">Height</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-1">
+            <label htmlFor="heightFeet" className="text-xs text-muted-foreground">
+              Feet
+            </label>
+            <input
+              id="heightFeet"
+              inputMode="decimal"
+              value={heightFeetInput}
+              onChange={(event) => setHeightFeetInput(event.target.value)}
+              className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              placeholder="5"
+            />
+          </div>
+          <div className="grid gap-1">
+            <label htmlFor="heightInches" className="text-xs text-muted-foreground">
+              Inches
+            </label>
+            <input
+              id="heightInches"
+              inputMode="decimal"
+              value={heightInchesInput}
+              onChange={(event) => setHeightInchesInput(event.target.value)}
+              className="h-10 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              placeholder="10"
+            />
+          </div>
+        </div>
         <input type="hidden" name="heightCm" value={heightCmValue} />
         {state.fieldErrors.heightCm ? (
           <p className="text-sm text-red-300">{state.fieldErrors.heightCm}</p>

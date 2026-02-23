@@ -1,6 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import { cmToInches, formatHeightForUnits, inchesToCm, toNumberOrNull } from "@/lib/profile/height";
+import {
+  cmToInches,
+  formatHeightForImperialParts,
+  formatHeightForUnits,
+  imperialHeightInputsToCm,
+  inchesToCm,
+  toNumberOrNull,
+} from "@/lib/profile/height";
 
 describe("cmToInches", () => {
   it("converts centimetres to inches", () => {
@@ -50,5 +57,32 @@ describe("formatHeightForUnits", () => {
   it("returns rounded inches string for imperial", () => {
     // 177.8 cm ≈ 70.0 in
     expect(formatHeightForUnits(177.8, "imperial")).toBe("70");
+  });
+});
+
+describe("formatHeightForImperialParts", () => {
+  it("returns blank parts for null height", () => {
+    expect(formatHeightForImperialParts(null)).toEqual({ feet: "", inches: "" });
+  });
+
+  it("formats cm into feet and inches", () => {
+    expect(formatHeightForImperialParts(177.8)).toEqual({ feet: "5", inches: "10" });
+    expect(formatHeightForImperialParts(180)).toEqual({ feet: "5", inches: "10.9" });
+  });
+});
+
+describe("imperialHeightInputsToCm", () => {
+  it("converts feet and inches strings to cm", () => {
+    expect(imperialHeightInputsToCm("5", "10")).toBe("177.8");
+    expect(imperialHeightInputsToCm("6", "0")).toBe("182.88");
+  });
+
+  it("returns empty string for fully blank inputs", () => {
+    expect(imperialHeightInputsToCm("", "")).toBe("");
+  });
+
+  it("returns empty string when either input is invalid", () => {
+    expect(imperialHeightInputsToCm("five", "10")).toBe("");
+    expect(imperialHeightInputsToCm("5", "ten")).toBe("");
   });
 });

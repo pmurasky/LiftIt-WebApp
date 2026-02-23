@@ -46,11 +46,12 @@ describe("ProfileOnboardingForm", () => {
 
       expect(screen.getByLabelText(/Username \*/i)).toBeDefined();
       expect(screen.getByText("Units Preference *")).toBeDefined();
-      expect(screen.getByText("Imperial (in)")).toBeDefined();
+      expect(screen.getByText("Imperial (lb, ft/in)")).toBeDefined();
       expect(screen.getByLabelText(/Display Name/i)).toBeDefined();
       expect(screen.getByLabelText(/Gender/i)).toBeDefined();
       expect(screen.getByLabelText(/Birthdate/i)).toBeDefined();
-      expect(screen.getByLabelText(/Height \(in\)/i)).toBeDefined();
+      expect(screen.getByLabelText(/Feet/i)).toBeDefined();
+      expect(screen.getByLabelText(/Inches/i)).toBeDefined();
       expect(screen.getByRole("button", { name: "Create Profile" })).toBeDefined();
     });
 
@@ -118,21 +119,23 @@ describe("ProfileOnboardingForm", () => {
       expect(hiddenUnits.value).toBe("imperial");
     });
 
-    it("converts entered inches to cm for the API payload", () => {
+    it("converts entered feet and inches to cm for the API payload", () => {
       render(<ProfileOnboardingForm />);
 
-      const heightInput = screen.getByLabelText(/Height \(in\)/i) as HTMLInputElement;
-      fireEvent.change(heightInput, { target: { value: "70" } });
+      const feetInput = screen.getByLabelText(/Feet/i) as HTMLInputElement;
+      const inchesInput = screen.getByLabelText(/Inches/i) as HTMLInputElement;
+      fireEvent.change(feetInput, { target: { value: "5" } });
+      fireEvent.change(inchesInput, { target: { value: "10" } });
 
       const hiddenHeight = document.querySelector('input[name="heightCm"]') as HTMLInputElement;
       expect(hiddenHeight.value).toBe("177.8");
     });
 
-    it("keeps hidden height empty when input is invalid", () => {
+    it("keeps hidden height empty when feet input is invalid", () => {
       render(<ProfileOnboardingForm />);
 
-      const heightInput = screen.getByLabelText(/Height \(in\)/i) as HTMLInputElement;
-      fireEvent.change(heightInput, { target: { value: "not-a-number" } });
+      const feetInput = screen.getByLabelText(/Feet/i) as HTMLInputElement;
+      fireEvent.change(feetInput, { target: { value: "not-a-number" } });
 
       const hiddenHeight = document.querySelector('input[name="heightCm"]') as HTMLInputElement;
       expect(hiddenHeight.value).toBe("");

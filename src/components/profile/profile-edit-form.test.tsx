@@ -56,11 +56,12 @@ describe("ProfileEditForm", () => {
 
       expect(screen.getByText("testuser")).toBeDefined();
       expect(screen.getByText("Units Preference *")).toBeDefined();
-      expect(screen.getByText("Imperial (in)")).toBeDefined();
+      expect(screen.getByText("Imperial (lb, ft/in)")).toBeDefined();
       expect(screen.getByLabelText(/Display Name/i)).toBeDefined();
       expect(screen.getByLabelText(/Gender/i)).toBeDefined();
       expect(screen.getByLabelText(/Birthdate/i)).toBeDefined();
-      expect(screen.getByLabelText(/Height \(in\)/i)).toBeDefined();
+      expect(screen.getByLabelText(/Feet/i)).toBeDefined();
+      expect(screen.getByLabelText(/Inches/i)).toBeDefined();
       expect(screen.getByRole("button", { name: "Save Changes" })).toBeDefined();
     });
 
@@ -76,8 +77,11 @@ describe("ProfileEditForm", () => {
       const birthdateInput = screen.getByLabelText(/Birthdate/i) as HTMLInputElement;
       expect(birthdateInput.value).toBe("1990-01-01");
 
-      const heightInput = screen.getByLabelText(/Height \(in\)/i) as HTMLInputElement;
-      expect(heightInput.value).toBe("70.9");
+      const feetInput = screen.getByLabelText(/Feet/i) as HTMLInputElement;
+      expect(feetInput.value).toBe("5");
+
+      const inchesInput = screen.getByLabelText(/Inches/i) as HTMLInputElement;
+      expect(inchesInput.value).toBe("10.9");
     });
 
     it("pre-populates with missing optional fields", () => {
@@ -92,8 +96,11 @@ describe("ProfileEditForm", () => {
 
       render(<ProfileEditForm profile={basicProfile} />);
 
-      const heightInput = screen.getByLabelText(/Height \(in\)/i) as HTMLInputElement;
-      expect(heightInput.value).toBe("68.9");
+      const feetInput = screen.getByLabelText(/Feet/i) as HTMLInputElement;
+      expect(feetInput.value).toBe("5");
+
+      const inchesInput = screen.getByLabelText(/Inches/i) as HTMLInputElement;
+      expect(inchesInput.value).toBe("8.9");
 
       const displayNameInput = screen.getByLabelText(/Display Name/i) as HTMLInputElement;
       expect(displayNameInput.value).toBe("");
@@ -179,21 +186,25 @@ describe("ProfileEditForm", () => {
       expect(hiddenUnits.value).toBe("imperial");
     });
 
-    it("converts entered inches to cm for update payload", () => {
+    it("converts entered feet and inches to cm for update payload", () => {
       render(<ProfileEditForm profile={mockProfile} />);
 
-      const heightInput = screen.getByLabelText(/Height \(in\)/i) as HTMLInputElement;
-      fireEvent.change(heightInput, { target: { value: "72" } });
+      const feetInput = screen.getByLabelText(/Feet/i) as HTMLInputElement;
+      const inchesInput = screen.getByLabelText(/Inches/i) as HTMLInputElement;
+      fireEvent.change(feetInput, { target: { value: "6" } });
+      fireEvent.change(inchesInput, { target: { value: "0" } });
 
       const hiddenHeight = document.querySelector('input[name="heightCm"]') as HTMLInputElement;
       expect(hiddenHeight.value).toBe("182.88");
     });
 
-    it("keeps hidden height empty when input is blank", () => {
+    it("keeps hidden height empty when both inputs are blank", () => {
       render(<ProfileEditForm profile={mockProfile} />);
 
-      const heightInput = screen.getByLabelText(/Height \(in\)/i) as HTMLInputElement;
-      fireEvent.change(heightInput, { target: { value: "" } });
+      const feetInput = screen.getByLabelText(/Feet/i) as HTMLInputElement;
+      const inchesInput = screen.getByLabelText(/Inches/i) as HTMLInputElement;
+      fireEvent.change(feetInput, { target: { value: "" } });
+      fireEvent.change(inchesInput, { target: { value: "" } });
 
       const hiddenHeight = document.querySelector('input[name="heightCm"]') as HTMLInputElement;
       expect(hiddenHeight.value).toBe("");

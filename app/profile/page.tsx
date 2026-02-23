@@ -2,23 +2,20 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { ProfileEditForm } from "@/components/profile/profile-edit-form";
-import { Button } from "@/components/ui/button";
+import { PageMessageCard } from "@/components/ui/page-message-card";
+import { PageCard, PageDescription, PageEyebrow, PageShell, PageTitle } from "@/components/ui/page-primitives";
 import { resolveProfileFlow } from "@/lib/profile/flow";
 
 function BlockedView({ message }: { message: string }) {
   return (
-    <main className="container py-10 sm:py-16">
-      <section className="rounded-xl border bg-card p-6 shadow-sm sm:p-8">
-        <p className="text-sm text-muted-foreground">LiftIt</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Profile unavailable</h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">{message}</p>
-        <div className="mt-6">
-          <Button asChild>
-            <Link href="/">Retry</Link>
-          </Button>
-        </div>
-      </section>
-    </main>
+    <PageShell spacing="roomy">
+      <PageMessageCard
+        title="Profile unavailable"
+        message={message}
+        actionHref="/"
+        actionLabel="Retry"
+      />
+    </PageShell>
   );
 }
 
@@ -40,20 +37,18 @@ export default async function ProfilePage() {
   const profile = flowState.profile;
 
   return (
-    <main className="container py-8 sm:py-12">
-      <section className="mx-auto max-w-2xl rounded-xl border bg-card p-6 shadow-sm sm:p-8">
-        <p className="text-sm text-muted-foreground">
+    <PageShell>
+      <PageCard width="content">
+        <PageEyebrow>
           <Link href="/dashboard" className="hover:underline">
             Dashboard
           </Link>{" "}
           / Profile
-        </p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Edit Profile</h1>
-        <p className="mt-3 text-muted-foreground">
-          Update your display preferences and optional personal details.
-        </p>
+        </PageEyebrow>
+        <PageTitle>Edit Profile</PageTitle>
+        <PageDescription>Update your display preferences and optional personal details.</PageDescription>
         <ProfileEditForm profile={profile} />
-      </section>
-    </main>
+      </PageCard>
+    </PageShell>
   );
 }

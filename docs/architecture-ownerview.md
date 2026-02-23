@@ -13,6 +13,27 @@
 - **Responsive Design**: All features must work on mobile phone browsers and desktop browsers (see [ADR-0001](adr/0001-responsive-design-mobile-and-desktop.md))
 - Mobile-first approach using Tailwind breakpoints
 - Minimum 44x44px touch targets for mobile interactions
+- **Shared styling layer**: Look-and-feel is defined once via shared tokens/primitives, then reused across pages/components (see [ADR-0002](adr/0002-design-v1-direction-and-non-goals.md))
+
+### Styling Governance
+
+- Use semantic tokens and shared style primitives as the default for visual decisions
+- Avoid duplicating hardcoded visual rules across page-level components
+- Limit local one-off styles to genuinely unique UI needs
+- Styling de-duplication work is tracked by epic `#32` with child issues `#28`, `#29`, `#30`, and `#31`
+
+### Shared Styling Primitives
+
+Use these primitives before introducing new page-level classes:
+
+- `src/components/ui/page-primitives.tsx` for `PageShell`, `PageCard`, `PageEyebrow`, `PageTitle`, and `PageDescription`
+- `src/components/ui/page-message-card.tsx` for blocked/unavailable/sign-in message cards with a CTA
+- `src/components/ui/form-primitives.ts` for repeated form control/read-only/error/success styles
+- `src/components/ui/nav-primitives.tsx` for shared app navigation chrome styles
+
+Guardrail:
+
+- Run `npm run lint:styles` (already included in `npm run lint`) to fail on known duplicated style class strings that should use shared primitives
 
 ---
 
@@ -122,5 +143,4 @@ try {
 - Clean, minimal UI components
 - Avoid premature abstraction
 - Clear separation between UI logic and API logic
-- Consistent styling through Tailwind + shadcn/ui
-
+- Consistent styling through Tailwind + shadcn/ui with shared tokens/primitives first

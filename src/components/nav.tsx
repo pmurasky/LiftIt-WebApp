@@ -2,30 +2,35 @@ import { auth0 } from "@/lib/auth0";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { loginAction, logoutAction } from "@/lib/auth/actions";
+import {
+  AppNav,
+  AppNavBrand,
+  AppNavContainer,
+  AppNavUserText,
+  appNavUserLinkClass,
+} from "./ui/nav-primitives";
 
 export async function Nav() {
   const session = await auth0.getSession();
   const user = session?.user;
 
   return (
-    <nav className="border-b bg-card">
-      <div className="container flex h-16 items-center justify-between">
+    <AppNav>
+      <AppNavContainer>
         <div className="flex items-center gap-6">
-          <span className="text-lg font-semibold">LiftIt</span>
+          <AppNavBrand>LiftIt</AppNavBrand>
         </div>
 
         <div className="flex items-center gap-4">
           {user ? (
             <>
-              <Link href="/dashboard" className="text-sm text-muted-foreground transition hover:text-foreground">
+              <Link href="/dashboard" className={appNavUserLinkClass}>
                 Dashboard
               </Link>
-              <Link href="/profile" className="text-sm text-muted-foreground transition hover:text-foreground">
+              <Link href="/profile" className={appNavUserLinkClass}>
                 Profile
               </Link>
-              <span className="text-sm text-muted-foreground">
-                {user.name || user.email}
-              </span>
+              <AppNavUserText>{user.name || user.email}</AppNavUserText>
               <form action={logoutAction}>
                 <Button variant="outline" size="sm" type="submit">
                   Log out
@@ -40,7 +45,7 @@ export async function Nav() {
             </form>
           )}
         </div>
-      </div>
-    </nav>
+      </AppNavContainer>
+    </AppNav>
   );
 }

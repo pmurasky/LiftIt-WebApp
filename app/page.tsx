@@ -1,42 +1,32 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
+import { PageMessageCard } from "@/components/ui/page-message-card";
+import { PageShell } from "@/components/ui/page-primitives";
 import { resolveProfileFlow } from "@/lib/profile/flow";
 
 function BlockedView({ message }: { message: string }) {
   return (
-    <main className="container py-10 sm:py-16">
-      <section className="rounded-xl border bg-card p-6 shadow-sm sm:p-8">
-        <p className="text-sm text-muted-foreground">LiftIt</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Profile service unavailable</h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">{message}</p>
-        <div className="mt-6">
-          <Button asChild>
-            <Link href="/">Retry</Link>
-          </Button>
-        </div>
-      </section>
-    </main>
+    <PageShell spacing="roomy">
+      <PageMessageCard
+        title="Profile service unavailable"
+        message={message}
+        actionHref="/"
+        actionLabel="Retry"
+      />
+    </PageShell>
   );
 }
 
 function SignInPrompt() {
   return (
-    <main className="container py-10 sm:py-16">
-      <section className="rounded-xl border bg-card p-6 shadow-sm sm:p-8">
-        <p className="text-sm text-muted-foreground">LiftIt</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight">Sign in to continue</h1>
-        <p className="mt-3 max-w-2xl text-muted-foreground">
-          Your session is required to load and create your profile.
-        </p>
-        <div className="mt-6">
-          <Button asChild>
-            <Link href="/auth/login">Log in</Link>
-          </Button>
-        </div>
-      </section>
-    </main>
+    <PageShell spacing="roomy">
+      <PageMessageCard
+        title="Sign in to continue"
+        message="Your session is required to load and create your profile."
+        actionHref="/auth/login"
+        actionLabel="Log in"
+      />
+    </PageShell>
   );
 }
 

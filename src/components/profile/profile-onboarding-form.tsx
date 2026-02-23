@@ -4,6 +4,13 @@ import { useActionState, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
+  formControlClass,
+  formErrorMessageClass,
+  formFieldErrorClass,
+  formHelperTextClass,
+  formReadonlyValueClass,
+} from "@/components/ui/form-primitives";
+import {
   type CreateProfileActionState,
   initialCreateProfileActionState,
 } from "@/lib/profile/action-state";
@@ -36,21 +43,21 @@ export function ProfileOnboardingForm() {
           required
           minLength={1}
           maxLength={30}
-          className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+          className={formControlClass}
           placeholder="trainwithalex"
         />
         {state.fieldErrors.username ? (
-          <p className="text-sm text-red-300">{state.fieldErrors.username}</p>
+          <p className={formFieldErrorClass}>{state.fieldErrors.username}</p>
         ) : null}
       </div>
 
       <div className="grid gap-2 sm:max-w-xs">
         <p className="text-sm font-medium">Units Preference *</p>
-        <p className="flex h-11 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground">
+        <p className={formReadonlyValueClass}>
           Imperial (lb, ft/in)
         </p>
         {state.fieldErrors.unitsPreference ? (
-          <p className="text-sm text-red-300">{state.fieldErrors.unitsPreference}</p>
+          <p className={formFieldErrorClass}>{state.fieldErrors.unitsPreference}</p>
         ) : null}
       </div>
 
@@ -62,12 +69,12 @@ export function ProfileOnboardingForm() {
           id="displayName"
           name="displayName"
           maxLength={100}
-          className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+          className={formControlClass}
           placeholder="Alex"
         />
-        <p className="text-xs text-muted-foreground">How your name appears in the app.</p>
+        <p className={formHelperTextClass}>How your name appears in the app.</p>
         {state.fieldErrors.displayName ? (
-          <p className="text-sm text-red-300">{state.fieldErrors.displayName}</p>
+          <p className={formFieldErrorClass}>{state.fieldErrors.displayName}</p>
         ) : null}
       </div>
 
@@ -79,7 +86,7 @@ export function ProfileOnboardingForm() {
           <select
             id="gender"
             name="gender"
-            className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+            className={formControlClass}
             defaultValue=""
           >
             <option value="">Not specified</option>
@@ -89,7 +96,7 @@ export function ProfileOnboardingForm() {
             <option value="prefer_not_to_say">Prefer not to say</option>
           </select>
           {state.fieldErrors.gender ? (
-            <p className="text-sm text-red-300">{state.fieldErrors.gender}</p>
+            <p className={formFieldErrorClass}>{state.fieldErrors.gender}</p>
           ) : null}
         </div>
 
@@ -101,10 +108,10 @@ export function ProfileOnboardingForm() {
             id="birthdate"
             name="birthdate"
             type="date"
-            className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+            className={formControlClass}
           />
           {state.fieldErrors.birthdate ? (
-            <p className="text-sm text-red-300">{state.fieldErrors.birthdate}</p>
+            <p className={formFieldErrorClass}>{state.fieldErrors.birthdate}</p>
           ) : null}
         </div>
       </div>
@@ -121,7 +128,7 @@ export function ProfileOnboardingForm() {
               inputMode="decimal"
               value={heightFeetInput}
               onChange={(event) => setHeightFeetInput(event.target.value)}
-              className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              className={formControlClass}
               placeholder="5"
             />
           </div>
@@ -134,19 +141,19 @@ export function ProfileOnboardingForm() {
               inputMode="decimal"
               value={heightInchesInput}
               onChange={(event) => setHeightInchesInput(event.target.value)}
-              className="h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring"
+              className={formControlClass}
               placeholder="10"
             />
           </div>
         </div>
         <input type="hidden" name="heightCm" value={heightCmValue} />
         {state.fieldErrors.heightCm ? (
-          <p className="text-sm text-red-300">{state.fieldErrors.heightCm}</p>
+          <p className={formFieldErrorClass}>{state.fieldErrors.heightCm}</p>
         ) : null}
       </div>
 
       {state.status === "error" && state.message ? (
-        <p className="rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+        <p className={formErrorMessageClass}>
           {state.message}
         </p>
       ) : null}

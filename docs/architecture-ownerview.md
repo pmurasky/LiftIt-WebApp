@@ -21,14 +21,18 @@
 - Avoid duplicating hardcoded visual rules across page-level components
 - Limit local one-off styles to genuinely unique UI needs
 - Styling de-duplication work is tracked by epic `#32` with child issues `#28`, `#29`, `#30`, and `#31`
+- Audit findings and migration priorities: `docs/styling-duplication-audit.md`
+- Contributor guidance and guardrails: `docs/styling-primitives-guidelines.md`
 
 ### Shared Styling Primitives
 
 Use these primitives before introducing new page-level classes:
 
-- `src/components/ui/page-primitives.tsx` for `PageShell`, `PageCard`, `PageEyebrow`, `PageTitle`, and `PageDescription`
+- `src/components/ui/page-primitives.tsx` for `PageShell`, `PageCard`, `PageHeader`, and underlying page text primitives
 - `src/components/ui/page-message-card.tsx` for blocked/unavailable/sign-in message cards with a CTA
+- `src/components/ui/flow-state-primitives.tsx` for shared blocked-state wrappers
 - `src/components/ui/form-primitives.ts` for repeated form control/read-only/error/success styles
+- `src/components/ui/dashboard-primitives.tsx` for dashboard stats layout/cards
 - `src/components/ui/nav-primitives.tsx` for shared app navigation chrome styles
 
 Guardrail:

@@ -6,6 +6,8 @@ const projectRoot = process.cwd();
 const scanRoots = ["app", "src/components"];
 
 const ignoredPaths = new Set([
+  "src/components/ui/dashboard-primitives.tsx",
+  "src/components/ui/flow-state-primitives.tsx",
   "src/components/ui/form-primitives.ts",
   "src/components/ui/nav-primitives.tsx",
   "src/components/ui/page-message-card.tsx",
@@ -37,6 +39,18 @@ const forbiddenPatterns = [
   {
     className: "text-sm text-muted-foreground transition hover:text-foreground",
     guidance: "Use appNavUserLinkClass for nav links",
+  },
+  {
+    className: "mt-8 grid gap-5",
+    guidance: "Use formLayoutClass for shared form layout spacing",
+  },
+  {
+    className: "mt-8 grid gap-4 sm:grid-cols-3",
+    guidance: "Use DashboardStatGrid for profile overview stats",
+  },
+  {
+    className: "rounded-lg border bg-background/40 p-4",
+    guidance: "Use DashboardStatCard for profile overview stats",
   },
 ];
 

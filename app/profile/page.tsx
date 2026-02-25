@@ -29,7 +29,10 @@ export default async function ProfilePage() {
         <PageHeader
           eyebrow={
             <>
-              <Link href="/dashboard" className="hover:underline">
+              <Link
+                href="/dashboard"
+                className="text-muted-foreground transition hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              >
                 Dashboard
               </Link>{" "}
               / Profile

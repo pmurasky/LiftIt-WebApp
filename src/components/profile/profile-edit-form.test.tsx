@@ -133,6 +133,9 @@ describe("ProfileEditForm", () => {
       expect(screen.getByText("Invalid gender")).toBeDefined();
       expect(screen.getByText("Invalid date")).toBeDefined();
       expect(screen.getByText("Height required")).toBeDefined();
+      expect(screen.getByLabelText(/Display Name/i).getAttribute("aria-invalid")).toBe("true");
+      expect(screen.getByLabelText(/Gender/i).getAttribute("aria-invalid")).toBe("true");
+      expect(screen.getByLabelText(/Birthdate/i).getAttribute("aria-invalid")).toBe("true");
     });
 
     it("displays global server errors", () => {

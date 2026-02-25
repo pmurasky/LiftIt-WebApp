@@ -4,7 +4,7 @@ import { useActionState, useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
-  formControlClass,
+  formControlClassName,
   formErrorMessageClass,
   formFieldErrorClass,
   formHelperTextClass,
@@ -44,7 +44,8 @@ export function ProfileOnboardingForm() {
           required
           minLength={1}
           maxLength={30}
-          className={formControlClass}
+          className={formControlClassName(Boolean(state.fieldErrors.username))}
+          aria-invalid={Boolean(state.fieldErrors.username)}
           placeholder="trainwithalex"
         />
         {state.fieldErrors.username ? (
@@ -70,7 +71,8 @@ export function ProfileOnboardingForm() {
           id="displayName"
           name="displayName"
           maxLength={100}
-          className={formControlClass}
+          className={formControlClassName(Boolean(state.fieldErrors.displayName))}
+          aria-invalid={Boolean(state.fieldErrors.displayName)}
           placeholder="Alex"
         />
         <p className={formHelperTextClass}>How your name appears in the app.</p>
@@ -87,7 +89,8 @@ export function ProfileOnboardingForm() {
           <select
             id="gender"
             name="gender"
-            className={formControlClass}
+            className={formControlClassName(Boolean(state.fieldErrors.gender))}
+            aria-invalid={Boolean(state.fieldErrors.gender)}
             defaultValue=""
           >
             <option value="">Not specified</option>
@@ -109,7 +112,8 @@ export function ProfileOnboardingForm() {
             id="birthdate"
             name="birthdate"
             type="date"
-            className={formControlClass}
+            className={formControlClassName(Boolean(state.fieldErrors.birthdate))}
+            aria-invalid={Boolean(state.fieldErrors.birthdate)}
           />
           {state.fieldErrors.birthdate ? (
             <p className={formFieldErrorClass}>{state.fieldErrors.birthdate}</p>
@@ -129,7 +133,8 @@ export function ProfileOnboardingForm() {
               inputMode="decimal"
               value={heightFeetInput}
               onChange={(event) => setHeightFeetInput(event.target.value)}
-              className={formControlClass}
+              className={formControlClassName(Boolean(state.fieldErrors.heightCm))}
+              aria-invalid={Boolean(state.fieldErrors.heightCm)}
               placeholder="5"
             />
           </div>
@@ -142,7 +147,8 @@ export function ProfileOnboardingForm() {
               inputMode="decimal"
               value={heightInchesInput}
               onChange={(event) => setHeightInchesInput(event.target.value)}
-              className={formControlClass}
+              className={formControlClassName(Boolean(state.fieldErrors.heightCm))}
+              aria-invalid={Boolean(state.fieldErrors.heightCm)}
               placeholder="10"
             />
           </div>

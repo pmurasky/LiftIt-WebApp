@@ -1,6 +1,8 @@
 export const formControlClass =
   "h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring";
 
+export const formLayoutClass = "mt-8 grid gap-5";
+
 export const formReadonlyValueClass =
   "flex h-11 items-center rounded-md border bg-muted px-3 text-sm text-muted-foreground";
 

@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { PageCard, PageDescription, PageEyebrow, PageTitle } from "@/components/ui/page-primitives";
+import { PageCard, PageHeader } from "@/components/ui/page-primitives";
 
 interface PageMessageCardProps {
   title: string;
@@ -20,9 +20,7 @@ export function PageMessageCard({
 }: PageMessageCardProps) {
   return (
     <PageCard>
-      <PageEyebrow>{eyebrow}</PageEyebrow>
-      <PageTitle>{title}</PageTitle>
-      <PageDescription className="max-w-2xl">{message}</PageDescription>
+      <PageHeader eyebrow={eyebrow} title={title} description={message} descriptionClassName="max-w-2xl" />
       <div className="mt-6">
         <Button asChild>
           <Link href={actionHref}>{actionLabel}</Link>

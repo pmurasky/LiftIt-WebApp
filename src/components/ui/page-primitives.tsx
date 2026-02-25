@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef } from "react";
+import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -43,4 +43,21 @@ export function PageTitle({ className, ...props }: ComponentPropsWithoutRef<"h1"
 
 export function PageDescription({ className, ...props }: ComponentPropsWithoutRef<"p">) {
   return <p className={cn("mt-3 text-muted-foreground", className)} {...props} />;
+}
+
+interface PageHeaderProps {
+  eyebrow?: ReactNode;
+  title: ReactNode;
+  description?: ReactNode;
+  descriptionClassName?: string;
+}
+
+export function PageHeader({ eyebrow, title, description, descriptionClassName }: PageHeaderProps) {
+  return (
+    <>
+      {eyebrow ? <PageEyebrow>{eyebrow}</PageEyebrow> : null}
+      <PageTitle>{title}</PageTitle>
+      {description ? <PageDescription className={descriptionClassName}>{description}</PageDescription> : null}
+    </>
+  );
 }

@@ -8,6 +8,7 @@ import {
   formErrorMessageClass,
   formFieldErrorClass,
   formHelperTextClass,
+  formLayoutClass,
   formReadonlyValueClass,
   formSuccessMessageClass,
 } from "@/components/ui/form-primitives";
@@ -38,7 +39,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
   }, [heightFeetInput, heightInchesInput]);
 
   return (
-    <form action={formAction} className="mt-8 grid gap-5">
+    <form action={formAction} className={formLayoutClass}>
       <input type="hidden" name="unitsPreference" value="imperial" />
 
       {/* Username — read-only */}

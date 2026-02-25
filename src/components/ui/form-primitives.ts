@@ -1,5 +1,11 @@
+import { cn } from "@/lib/utils";
+
 export const formControlClass =
-  "h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring";
+  "h-11 rounded-md border bg-background px-3 text-sm outline-none ring-offset-background transition focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-60";
+
+export function formControlClassName(hasError = false) {
+  return cn(formControlClass, hasError && "border-destructive focus-visible:ring-destructive");
+}
 
 export const formLayoutClass = "mt-8 grid gap-5";
 
@@ -8,10 +14,10 @@ export const formReadonlyValueClass =
 
 export const formHelperTextClass = "text-xs text-muted-foreground";
 
-export const formFieldErrorClass = "text-sm text-red-300";
+export const formFieldErrorClass = "text-sm text-destructive";
 
 export const formErrorMessageClass =
-  "rounded-md border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200";
+  "rounded-md border border-destructive-border bg-destructive-soft px-3 py-2 text-sm text-destructive-foreground";
 
 export const formSuccessMessageClass =
-  "rounded-md border border-green-500/40 bg-green-500/10 px-3 py-2 text-sm text-green-200";
+  "rounded-md border border-success-border bg-success-soft px-3 py-2 text-sm text-success-foreground";

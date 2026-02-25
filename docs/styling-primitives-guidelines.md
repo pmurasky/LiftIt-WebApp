@@ -2,6 +2,8 @@
 
 Use this guide when touching UI code to keep design decisions centralized.
 
+Related token guide: `docs/design-token-usage.md`
+
 ## Decision Order
 
 1. Use an existing primitive in `src/components/ui/*-primitives.ts(x)`

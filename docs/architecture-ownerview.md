@@ -23,6 +23,9 @@
 - Styling de-duplication work is tracked by epic `#32` with child issues `#28`, `#29`, `#30`, and `#31`
 - Audit findings and migration priorities: `docs/styling-duplication-audit.md`
 - Contributor guidance and guardrails: `docs/styling-primitives-guidelines.md`
+- Semantic vs primitive token usage: `docs/design-token-usage.md`
+- Top-flow rollout decisions: `docs/v1-top-flow-token-rollout.md`
+- QA/accessibility pass notes: `docs/v1-styling-qa-checklist.md`
 
 ### Shared Styling Primitives
 

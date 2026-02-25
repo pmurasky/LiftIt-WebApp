@@ -1,21 +1,9 @@
 import { redirect } from "next/navigation";
 
+import { BlockedStateView } from "@/components/ui/flow-state-primitives";
 import { PageMessageCard } from "@/components/ui/page-message-card";
 import { PageShell } from "@/components/ui/page-primitives";
 import { resolveProfileFlow } from "@/lib/profile/flow";
-
-function BlockedView({ message }: { message: string }) {
-  return (
-    <PageShell spacing="roomy">
-      <PageMessageCard
-        title="Profile service unavailable"
-        message={message}
-        actionHref="/"
-        actionLabel="Retry"
-      />
-    </PageShell>
-  );
-}
 
 function SignInPrompt() {
   return (
@@ -42,7 +30,7 @@ export default async function Home() {
   }
 
   if (flowState.status === "blocked") {
-    return <BlockedView message={flowState.message} />;
+    return <BlockedStateView title="Profile service unavailable" message={flowState.message} />;
   }
 
   return <SignInPrompt />;

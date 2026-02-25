@@ -1,21 +1,14 @@
 import { redirect } from "next/navigation";
 
-import { PageMessageCard } from "@/components/ui/page-message-card";
-import { PageCard, PageDescription, PageEyebrow, PageShell, PageTitle } from "@/components/ui/page-primitives";
+import {
+  DashboardStatCard,
+  DashboardStatGrid,
+  DashboardStatLabel,
+  DashboardStatValue,
+} from "@/components/ui/dashboard-primitives";
+import { BlockedStateView } from "@/components/ui/flow-state-primitives";
+import { PageCard, PageHeader, PageShell } from "@/components/ui/page-primitives";
 import { resolveProfileFlow } from "@/lib/profile/flow";
-
-function BlockedView({ message }: { message: string }) {
-  return (
-    <PageShell spacing="roomy">
-      <PageMessageCard
-        title="Dashboard unavailable"
-        message={message}
-        actionHref="/"
-        actionLabel="Retry"
-      />
-    </PageShell>
-  );
-}
 
 export default async function DashboardPage() {
   const flowState = await resolveProfileFlow();
@@ -29,7 +22,7 @@ export default async function DashboardPage() {
   }
 
   if (flowState.status === "blocked") {
-    return <BlockedView message={flowState.message} />;
+    return <BlockedStateView title="Dashboard unavailable" message={flowState.message} />;
   }
 
   const profile = flowState.profile;
@@ -37,29 +30,26 @@ export default async function DashboardPage() {
   return (
     <PageShell>
       <PageCard>
-        <PageEyebrow>LiftIt Dashboard</PageEyebrow>
-        <PageTitle>Welcome, {profile.displayName ?? profile.username}</PageTitle>
-        <PageDescription>
-          Your profile is active. Training plan, workout logging, and progress modules can now build
-          on this gated entry point.
-        </PageDescription>
+        <PageHeader
+          eyebrow="LiftIt Dashboard"
+          title={<>Welcome, {profile.displayName ?? profile.username}</>}
+          description="Your profile is active. Training plan, workout logging, and progress modules can now build on this gated entry point."
+        />
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
-          <article className="rounded-lg border bg-background/40 p-4">
-            <h2 className="text-sm font-medium text-muted-foreground">Units</h2>
-            <p className="mt-2 text-xl font-semibold capitalize">{profile.unitsPreference}</p>
-          </article>
-          <article className="rounded-lg border bg-background/40 p-4">
-            <h2 className="text-sm font-medium text-muted-foreground">Height</h2>
-            <p className="mt-2 text-xl font-semibold">
-              {profile.heightCm ? `${profile.heightCm} cm` : "Not set"}
-            </p>
-          </article>
-          <article className="rounded-lg border bg-background/40 p-4">
-            <h2 className="text-sm font-medium text-muted-foreground">Birthdate</h2>
-            <p className="mt-2 text-xl font-semibold">{profile.birthdate ?? "Not set"}</p>
-          </article>
-        </div>
+        <DashboardStatGrid>
+          <DashboardStatCard>
+            <DashboardStatLabel>Units</DashboardStatLabel>
+            <DashboardStatValue className="capitalize">{profile.unitsPreference}</DashboardStatValue>
+          </DashboardStatCard>
+          <DashboardStatCard>
+            <DashboardStatLabel>Height</DashboardStatLabel>
+            <DashboardStatValue>{profile.heightCm ? `${profile.heightCm} cm` : "Not set"}</DashboardStatValue>
+          </DashboardStatCard>
+          <DashboardStatCard>
+            <DashboardStatLabel>Birthdate</DashboardStatLabel>
+            <DashboardStatValue>{profile.birthdate ?? "Not set"}</DashboardStatValue>
+          </DashboardStatCard>
+        </DashboardStatGrid>
       </PageCard>
     </PageShell>
   );

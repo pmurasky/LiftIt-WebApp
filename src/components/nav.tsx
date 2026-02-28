@@ -30,6 +30,9 @@ export async function Nav() {
               <Link href="/profile" className={appNavUserLinkClass}>
                 Profile
               </Link>
+              <Link href="/weight" className={appNavUserLinkClass}>
+                Body Weight
+              </Link>
               <AppNavUserText>{user.name || user.email}</AppNavUserText>
               <form action={logoutAction}>
                 <Button variant="outline" size="sm" type="submit">

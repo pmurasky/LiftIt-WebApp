@@ -20,12 +20,9 @@
 - Use semantic tokens and shared style primitives as the default for visual decisions
 - Avoid duplicating hardcoded visual rules across page-level components
 - Limit local one-off styles to genuinely unique UI needs
-- Styling de-duplication work is tracked by epic `#32` with child issues `#28`, `#29`, `#30`, and `#31`
 - Audit findings and migration priorities: `docs/styling-duplication-audit.md`
 - Contributor guidance and guardrails: `docs/styling-primitives-guidelines.md`
 - Semantic vs primitive token usage: `docs/design-token-usage.md`
-- Top-flow rollout decisions: `docs/v1-top-flow-token-rollout.md`
-- QA/accessibility pass notes: `docs/v1-styling-qa-checklist.md`
 
 ### Shared Styling Primitives
 
@@ -97,10 +94,9 @@ const token = await getAccessToken(); // null if not logged in
 const data = await apiRequest("/workouts", { token });
 ```
 
-### React / SDK version notes
+### SDK version note
 
-- React was upgraded from `19.0.0` → `19.2.4` to satisfy `@auth0/nextjs-auth0` peer dep (`^19.2.1`)
-- Pinned SDK version: `@auth0/nextjs-auth0@4.15.0` (v4.14.0+ tightened the React peer dep range)
+- Pinned SDK version: `@auth0/nextjs-auth0@4.15.0`
 
 ---
 

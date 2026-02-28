@@ -32,15 +32,15 @@ Use this file for LiftIt-specific context. For shared engineering standards and 
 ## Testing and Coverage
 
 - Coverage thresholds are enforced in `vitest.config.ts`.
-- Current thresholds: 80% lines, 80% functions, 80% branches, 80% statements.
+- Current thresholds: 80% across lines, functions, branches, and statements.
 
 ## ADRs
 
 - Architecture decisions live in `docs/adr/`.
 
-## Styling Decision
+## Styling Guidance
 
 - Reuse shared styling tokens/primitives to keep look-and-feel consistent across pages/components.
 - Avoid duplicating page-level visual rules when shared styling primitives exist.
-- Track implementation in epic `#32` and issues `#28`, `#29`, `#30`, `#31`.
-- See `docs/adr/0002-design-v1-direction-and-non-goals.md` for the accepted decision.
+- Use `docs/styling-primitives-guidelines.md` for contributor guardrails.
+- Use `docs/architecture-ownerview.md` for the shared primitive inventory.

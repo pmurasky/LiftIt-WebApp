@@ -2,6 +2,15 @@
 
 Use this file for LiftIt-specific context. For shared engineering standards and workflow rules, always apply `engineering-standards/CLAUDE.md`.
 
+## Token Budget Mode
+
+- Prefer targeted reads and searches (`Read` slices, scoped `Grep`/`Glob`) over broad scans.
+- Use a compact task loop: investigate -> edit -> targeted verify -> report.
+- Run the smallest useful verification first (single test/lint/typecheck for touched scope).
+- Avoid dumping long command logs; summarize failures and key lines.
+- If two correction attempts fail on the same issue, reset with a narrower prompt/context.
+- Start a fresh session for unrelated tasks instead of carrying stale context.
+
 ## Project Stack
 
 - Next.js 15 (App Router)

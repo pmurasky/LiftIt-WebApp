@@ -53,3 +53,18 @@ Use this file for LiftIt-specific context. For shared engineering standards and 
 - Avoid duplicating page-level visual rules when shared styling primitives exist.
 - Use `docs/styling-primitives-guidelines.md` for contributor guardrails.
 - Use `docs/architecture-ownerview.md` for the shared primitive inventory.
+
+## Out-of-Scope Files (Do Not Read)
+
+Do not proactively read these — they are irrelevant to TypeScript/Next.js work or are stale historical snapshots:
+
+- `engineering-standards/config/` — Java/Kotlin static analysis tool configs
+- `engineering-standards/docs/GO_STANDARDS.md`
+- `engineering-standards/docs/JAVA_STANDARDS.md`
+- `engineering-standards/docs/KOTLIN_STANDARDS.md`
+- `engineering-standards/docs/PYTHON_STANDARDS.md`
+- `engineering-standards/docs/ARCHUNIT_STANDARDS.md`
+- `engineering-standards/docs/CHECKSTYLE_STANDARDS.md`
+- `engineering-standards/docs/SPOTBUGS_STANDARDS.md`
+- `engineering-standards/docs/STATIC_ANALYSIS_STANDARDS.md`
+- `engineering-standards/docs/SOLID_PRINCIPLES.md`
